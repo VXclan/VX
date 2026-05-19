@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VX ROSTER</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            pureBlack: '#000000',
+                            pureWhite: '#FFFFFF',
+                            grayDark: '#0A0A0A',
+                            grayMid: '#161616',
+                            grayLight: '#8E8E8E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Orbitron', 'Noto Sans TC', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 引入極具電競未來感的 Orbitron 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 科技感背景網格 */
+        .tech-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+        }
+
+        /* 溫和的淡背光 */
+        .radial-glow {
+            background: radial-gradient(circle at top, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 80%);
+        }
+
+        /* 卡片發光邊框特效 */
+        .member-card {
+            position: relative;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .member-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-brand-pureBlack text-brand-pureWhite min-h-screen flex flex-col justify-between overflow-x-hidden relative selection:bg-white selection:text-black">
+
+    <!-- 科技背景層 -->
+    <div class="absolute inset-0 tech-grid pointer-events-none z-0"></div>
+    <div class="absolute inset-0 radial-glow pointer-events-none z-0"></div>
+
+    <!-- 頂部導覽列 -->
+    <header class="w-full px-8 py-6 flex justify-between items-center z-10 relative">
+        <div class="flex items-center space-x-3 cursor-pointer">
+            <span class="text-xl font-black tracking-widest text-brand-pureWhite">VX</span>
+            <span class="text-xs text-brand-grayLight tracking-[0.2em] uppercase border-l border-neutral-800 pl-3">Esports</span>
+        </div>
+        <nav class="hidden md:flex space-x-10 text-xs font-semibold tracking-[0.35em] text-brand-grayLight">
+            <a href="index.html" class="hover:text-brand-pureWhite transition-all duration-300">HOME</a>
+            <a href="#" class="hover:text-brand-pureWhite transition-all duration-300">ABOUT</a>
+            <a href="roster.html" class="text-brand-pureWhite tracking-[0.45em]">ROSTER</a>
+            <a href="#" class="hover:text-brand-pureWhite transition-all duration-300">JOIN</a>
+        </nav>
+        <div>
+            <a href="index.html" class="border border-neutral-800 text-[10px] tracking-[0.25em] px-5 py-2 hover:bg-white hover:text-black hover:border-white transition-all duration-500 uppercase font-bold">
+                BACK TO HOME
+            </a>
+        </div>
+    </header>
+
+    <!-- 主區塊：隊員名單 -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-6 py-12 z-10 relative">
+        
+        <!-- 頁面大標題 -->
+        <div class="text-center mb-16 space-y-2">
+            <h2 class="text-3xl md:text-4xl font-black tracking-[0.3em] uppercase" style="font-family: 'Orbitron', sans-serif;">
+                ACTIVE ROSTER
+            </h2>
+            <div class="h-[1px] w-24 bg-neutral-800 mx-auto"></div>
+            <p class="text-[10px] tracking-[0.4em] text-neutral-500 uppercase pt-2">
+                Meet the elite force of VX
+            </p>
+        </div>
+
+        <!-- 隊員卡片 Grid 網格 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- 隊員卡片 1 -->
+            <div class="member-card p-6 rounded-none flex flex-col justify-between h-[360px]">
+                <div>
+                    <!-- 隊內職位 Tag -->
+                    <div class="flex justify-between items-start">
+                        <span class="text-[9px] tracking-[0.25em] text-neutral-500 font-bold uppercase" style="font-family: 'Orbitron', sans-serif;">
+                            01 / CAPTAIN & IGL
+                        </span>
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                    </div>
+                    
+                    <!-- 隊員 ID -->
+                    <h3 class="text-2xl font-extrabold tracking-wider mt-8 mb-2" style="font-family: 'Orbitron', sans-serif;">
+                        VX_Alpha
+                    </h3>
+                    <p class="text-xs text-neutral-400 tracking-widest font-light mb-6">
+                        主要擅長角色 / 槍位：決鬥者 Duelist
+                    </p>
+                </div>
+                
+                <!-- 卡片底部數據或簽名 -->
+                <div class="border-t border-neutral-900 pt-4 flex justify-between items-center">
+                    <span class="text-[10px] tracking-widest text-neutral-500 uppercase">ACTIVE SINCE 2024</span>
+                    <span class="text-xs hover:text-neutral-400 cursor-pointer transition-colors">STATS ↗</span>
+                </div>
+            </div>
+
+            <!-- 隊員卡片 2 -->
+            <div class="member-card p-6 rounded-none flex flex-col justify-between h-[360px]">
+                <div>
+                    <div class="flex justify-between items-start">
+                        <span class="text-[9px] tracking-[0.25em] text-neutral-500 font-bold uppercase" style="font-family: 'Orbitron', sans-serif;">
+                            02 / ENTRY FRAGGER
+                        </span>
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                    </div>
+                    
+                    <h3 class="text-2xl font-extrabold tracking-wider mt-8 mb-2" style="font-family: 'Orbitron', sans-serif;">
+                        VX_Spectre
+                    </h3>
+                    <p class="text-xs text-neutral-400 tracking-widest font-light mb-6">
+                        主要擅長角色 / 槍位：突破手 Entry
+                    </p>
+                </div>
+                
+                <div class="border-t border-neutral-900 pt-4 flex justify-between items-center">
+                    <span class="text-[10px] tracking-widest text-neutral-500 uppercase">ACTIVE SINCE 2024</span>
+                    <span class="text-xs hover:text-neutral-400 cursor-pointer transition-colors">STATS ↗</span>
+                </div>
+            </div>
+
+            <!-- 隊員卡片 3 -->
+            <div class="member-card p-6 rounded-none flex flex-col justify-between h-[360px]">
+                <div>
+                    <div class="flex justify-between items-start">
+                        <span class="text-[9px] tracking-[0.25em] text-neutral-500 font-bold uppercase" style="font-family: 'Orbitron', sans-serif;">
+                            03 / SNIPER
+                        </span>
+                        <span class="w-2 h-2 bg-white rounded-full"></span>
+                    </div>
+                    
+                    <h3 class="text-2xl font-extrabold tracking-wider mt-8 mb-2" style="font-family: 'Orbitron', sans-serif;">
+                        VX_Phantom
+                    </h3>
+                    <p class="text-xs text-neutral-400 tracking-widest font-light mb-6">
+                        主要擅長角色 / 槍位：狙擊手 Main OP
+                    </p>
+                </div>
+                
+                <div class="border-t border-neutral-900 pt-4 flex justify-between items-center">
+                    <span class="text-[10px] tracking-widest text-neutral-500 uppercase">ACTIVE SINCE 2025</span>
+                    <span class="text-xs hover:text-neutral-400 cursor-pointer transition-colors">STATS ↗</span>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- 底部資訊 -->
+    <footer class="w-full px-8 py-6 flex flex-col md:flex-row justify-between items-center text-[9px] tracking-[0.25em] text-neutral-600 z-10 space-y-3 md:space-y-0 border-t border-neutral-950">
+        <div>
+            &copy; 2026 VX TEAM. ALL RIGHTS RESERVED.
+        </div>
+        <div class="flex space-x-8">
+            <a href="#" class="hover:text-brand-pureWhite transition-colors duration-300">DISCORD</a>
+            <a href="#" class="hover:text-brand-pureWhite transition-colors duration-300">YOUTUBE</a>
+            <a href="#" class="hover:text-brand-pureWhite transition-colors duration-300">INSTAGRAM</a>
+        </div>
+    </footer>
+
+</body>
+</html>
