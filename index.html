@@ -2,32 +2,42 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>我的內嵌網頁</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VX Clan 官方網站</title>
     <style>
-        /* 滿版容器設定 */
-        .iframe-container {
+        /* 移除網頁預設的邊距，防止出現雙重捲軸 */
+        html, body {
+            margin: 0;
+            padding: 0;
             width: 100%;
-            max-width: 1200px; /* 最大寬度限制，可自行調整 */
-            margin: 0 auto;    /* 網頁置中 */
-            padding: 10px;
+            height: 100%;
+            overflow: hidden; /* 隱藏外層捲軸，只保留內嵌網站的捲軸 */
+            background-color: #0b0c10; /* 設定暗色背景，貼合戰隊霓虹風格 */
         }
-        
-        /* 讓 iframe 根據容器自動伸縮 */
-        .responsive-iframe {
+
+        /* 讓內嵌框架完美充滿整個螢幕 */
+        .vx-iframe-wrapper {
             width: 100%;
-            height: 75vh;     /* 佔據瀏覽器可視高度的 75% */
-            border: 2px solid #00ffcc; /* 可以幫它加個炫酷的科技感邊框 */
-            border-radius: 8px;        /* 圓角 */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* 陰影特效 */
+            height: 100%;
+        }
+
+        .vx-iframe-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
         }
     </style>
 </head>
 <body>
 
-    <div class="iframe-container">
-        <h2>正在瀏覽外部網站：</h2>
-        <!-- 記得把 src 改成你想嵌入的網址 -->
-        <iframe src="https://vxclan.wixstudio.com/vxclan" class="responsive-iframe"></iframe>
+    <div class="vx-iframe-wrapper">
+        <!-- 成功內嵌你的 Wix Studio 戰隊網站 -->
+        <iframe 
+            src="https://vxclan.wixstudio.com/vxclan" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
     </div>
 
 </body>
