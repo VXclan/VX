@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #0b0b0d;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* --- 互動滑鼠微光 --- */
+        .cursor-glow {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(255, 234, 0, 0.4) 0%, rgba(255, 145, 0, 0) 70%);
+            border-radius: 50%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: screen;
+            display: none; /* 預設隱藏，有滑鼠的裝置才會被 JS 啟動 */
+        }
+
+        /* 當滑鼠移到可互動元素上時，微光放大並變色 */
+        .cursor-glow.hovered {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(0, 173, 181, 0.5) 0%, rgba(0, 173, 181, 0) 70%);
+        }
+
+        /* --- 動畫基礎設定 --- */
+        .reveal {
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity;
+        }
+
+        /* 向上漸顯 */
+        .fade-up {
+            transform: translateY(60px);
+        }
+
+        /* 向右滑入 */
+        .fade-left {
+            transform: translateX(-50px);
+        }
+
+        /* 縮放漸顯 */
+        .scale-up {
+            transform: scale(0.9);
+        }
+
+        /* 啟用動畫後的狀態 */
+        .reveal.active {
+            opacity: 1;
+            transform: translate(0, 0) scale(1);
+        }
+
+        /* 第一幕 */
+        .hero-section {
+            height: 100vh;
+            background-image: url('背景.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+        }
+
+        h1 {
+            margin-top: 65vh;
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #ffea00;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            text-shadow: 
+                0 0 5px #ffea00,
+                0 0 10px #ffea00,
+                0 0 20px #ff9100,
+                0 0 40px #ff9100;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        h1.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: neonPulse 2s ease-in-out infinite alternate;
+            animation-delay: 1.2s; /* 登場動畫完畢後再啟動呼吸燈 */
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 
+                    0 0 5px #ffea00,
+                    0 0 10px #ffea00,
+                    0 0 20px #ff9100,
+                    0 0 30px #ff9100;
+                transform: scale(1);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px #ffea00,
+                    0 0 25px #ffea00,
+                    0 0 45px #ff9100,
+                    0 0 60px #ff5500,
+                    0 0 80px #ff5500;
+                transform: scale(1.03);
+            }
+        }
+
+        /* 第二幕 */
+        .second-section {
+            min-height: 100vh;
+            background-color: #121216;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #ffea00;
+            margin-bottom: 50px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px rgba(255, 234, 0, 0.4);
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        /* 互動式特色項目 */
+        .feature-item {
+            background: #1a1a22;
+            padding: 25px 30px;
+            border-radius: 12px;
+            border-left: 5px solid #ffea00;
+            font-size: 1.3rem;
+            text-align: left;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 特色卡片的探照發光背景效果 */
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: var(--y, 0);
+            left: var(--x, 0);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 234, 0, 0.08) 0%, rgba(255,255,255,0) 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .feature-item:hover::before {
+            opacity: 1;
+        }
+
+        .feature-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 25px rgba(255, 234, 0, 0.15);
+            background: #20202a;
+        }
+
+        .alliance-card {
+            background: linear-gradient(135deg, #1e1e26 0%, #15151c 100%);
+            padding: 35px;
+            border-radius: 16px;
+            border: 2px dashed #ffea00;
+            box-shadow: 0 0 20px rgba(255, 234, 0, 0.1);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .alliance-card:hover {
+            box-shadow: 0 0 30px rgba(255, 234, 0, 0.25);
+            transform: scale(1.02);
+        }
+
+        .alliance-name {
+            font-size: 1.5rem;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* 第三幕 */
+        .third-section {
+            min-height: 100vh;
+            background-image: url('背景.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+        }
+
+        /* 3D 傾斜容器 */
+        .social-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            width: 100%;
+            perspective: 1000px; /* 3D 空間透視距離 */
+        }
+
+        .social-card {
+            background: rgba(18, 18, 22, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 50px 30px;
+            width: 340px;
+            text-decoration: none;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.1s ease-out, box-shadow 0.3s, border-color 0.3s;
+            position: relative;
+            transform-style: preserve-3d; /* 讓子元素支援 3D 層次 */
+        }
+
+        /* 3D 特效子元素突起效果 */
+        .social-card .icon-wrapper,
+        .social-card h3,
+        .social-card p,
+        .social-card .action-btn {
+            transform: translateZ(30px); /* 滑鼠移入時，文字跟圖標會立體懸浮高於卡片表面 */
+            transition: transform 0.3s ease;
+        }
+
+        /* Discord 卡片外觀與懸停發光 */
+        .card-discord {
+            border: 2px solid #5865f2;
+            box-shadow: 0 10px 30px rgba(88, 101, 242, 0.15);
+        }
+
+        .card-discord:hover {
+            box-shadow: 0 20px 50px rgba(88, 101, 242, 0.6);
+        }
+
+        /* LINE 卡片外觀與懸停發光 */
+        .card-line {
+            border: 2px solid #06c755;
+            box-shadow: 0 10px 30px rgba(6, 199, 85, 0.15);
+        }
+
+        .card-line:hover {
+            box-shadow: 0 20px 50px rgba(6, 199, 85, 0.6);
+        }
+
+        /* 圖標外層容器 */
+        .icon-wrapper {
+            width: 75px;
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-card:hover .icon-wrapper {
+            transform: translateZ(50px) scale(1.15) rotate(5deg); /* 圖標會以更大弧度突起並旋轉 */
+        }
+
+        .icon-wrapper svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Discord 圖標顏色 */
+        .card-discord .icon-wrapper svg {
+            filter: drop-shadow(0 0 10px rgba(88, 101, 242, 0.6));
+        }
+
+        /* LINE 圖標顏色 */
+        .card-line .icon-wrapper svg {
+            filter: drop-shadow(0 0 10px rgba(6, 199, 85, 0.6));
+        }
+
+        /* 卡片文字排版 */
+        .social-card h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .social-card p {
+            font-size: 1rem;
+            color: #a8a8b3;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        /* 立即加入按鈕樣式 */
+        .action-btn {
+            width: 100%;
+            padding: 12px 0;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .card-discord .action-btn {
+            background-color: #5865f2;
+            color: #ffffff;
+        }
+
+        .card-discord:hover .action-btn {
+            background-color: #4752c4;
+            transform: translateZ(40px) scale(1.05);
+        }
+
+        .card-line .action-btn {
+            background-color: #06c755;
+            color: #ffffff;
+        }
+
+        .card-line:hover .action-btn {
+            background-color: #05a044;
+            transform: translateZ(40px) scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 粒子微光滑鼠隨動特效容器 -->
+    <div id="cursor-glow" class="cursor-glow"></div>
+
+    <!-- 第一幕 -->
+    <section class="hero-section">
+        <h1 id="hero-title">VX戰隊</h1>
+    </section>
+
+    <!-- 第二幕 -->
+    <section class="second-section">
+        <div class="container">
+            <h2 class="reveal fade-up">VX戰隊特色</h2>
+            
+            <div class="feature-list">
+                <div class="feature-item reveal fade-left" style="transition-delay: 0s;">擁有友善的團長、副團長 and 管理員</div>
+                <div class="feature-item reveal fade-left" style="transition-delay: 0.15s;">擁有完善的群規和隊規</div>
+                <div class="feature-item reveal fade-left" style="transition-delay: 0.3s;">經常打團戰，和別的戰隊切磋</div>
+            </div>
+
+            <div class="alliance-card reveal scale-up" style="transition-delay: 0.2s;">
+                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽𝓮𝓭 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓷𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第三幕 -->
+    <section class="third-section">
+        <div class="container">
+            <h2 class="reveal fade-up">VX戰隊社群</h2>
+            
+            <div class="social-grid">
+                <!-- Discord 卡片 -->
+                <a href="https://discord.gg/AaFnHemtyC" target="_blank" rel="noopener noreferrer" class="social-card card-discord reveal fade-up" style="transition-delay: 0s;">
+                    <div class="icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36" fill="#5865f2">
+                            <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,68.43,68.43,0,0,1-10.4-5c.87-.64,1.71-1.32,2.51-2a75.43,75.43,0,0,0,72.63,0c.8,0.71,1.64,1.39,2.51,2a68.43,68.43,0,0,1-10.4,5,77.7,77.7,0,0,0,6.63,10.85,105.73,105.73,0,0,0,31-18.83C129,54.65,122.56,31.58,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
+                        </svg>
+                    </div>
+                    <h3>Discord 群組</h3>
+                    <p>進入我們的 Discord 語音大廳，和團員們一起開麥溝通、分享遊戲技巧與即時交流戰術！</p>
+                    <div class="action-btn">立即加入</div>
+                </a>
+
+                <!-- LINE 卡片 -->
+                <a href="https://line.me/ti/g2/oTqJRMxFiTT8rRXSAAhILOXCSF8Z1_Kc4gcFYg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" rel="noopener noreferrer" class="social-card card-line reveal fade-up" style="transition-delay: 0.2s;">
+                    <div class="icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#06c755">
+                            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                        </svg>
+                    </div>
+                    <h3>LINE 社群</h3>
+                    <p>加入隨時熱絡的 LINE 大家庭，在日常聊天中快速聯絡感情、分享迷因，獲得戰隊第一手消息！</p>
+                    <div class="action-btn">立即加入</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 交互與動畫控制腳本 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // ==========================================
+            // 1. 首頁主標題登場動畫
+            // ==========================================
+            const heroTitle = document.getElementById('hero-title');
+            if (heroTitle) {
+                setTimeout(() => {
+                    heroTitle.classList.add('active');
+                }, 150);
+            }
+
+            // ==========================================
+            // 2. 滾動偵測（偵測元素是否進入畫面中）
+            // ==========================================
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const observerOptions = {
+                root: null,
+                threshold: 0.15,
+                rootMargin: "0px 0px -40px 0px"
+            };
+
+            const revealObserver = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+
+            // ==========================================
+            // 3. 微光游標隨動與互動縮放
+            // ==========================================
+            const cursorGlow = document.getElementById('cursor-glow');
+            
+            // 偵測是否為行動裝置，避免手機出現不自然的圓圈
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            if (!isTouchDevice) {
+                cursorGlow.style.display = 'block'; // 只有電腦端才顯示游標隨動
+                
+                document.addEventListener('mousemove', (e) => {
+                    // 使用 requestAnimationFrame 達到極速渲染
+                    requestAnimationFrame(() => {
+                        cursorGlow.style.left = `${e.clientX}px`;
+                        cursorGlow.style.top = `${e.clientY}px`;
+                    });
+                });
+
+                // 讓滑鼠移到卡片或按鈕上時，微光放大並轉為青色
+                const interactiveElements = document.querySelectorAll('.social-card, .feature-item, .alliance-card');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        cursorGlow.classList.add('hovered');
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        cursorGlow.classList.remove('hovered');
+                    });
+                });
+            }
+
+            // ==========================================
+            // 4. 第二幕：特色項目雷射追蹤微光
+            // ==========================================
+            const featureItems = document.querySelectorAll('.feature-item');
+            featureItems.forEach(item => {
+                item.addEventListener('mousemove', (e) => {
+                    const rect = item.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    item.style.setProperty('--x', `${x}px`);
+                    item.style.setProperty('--y', `${y}px`);
+                });
+            });
+
+            // ==========================================
+            // 5. 第三幕：3D Card Tilt 立體傾斜效果
+            // ==========================================
+            const cards = document.querySelectorAll('.social-card');
+            
+            if (!isTouchDevice) {
+                cards.forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        
+                        // 計算滑鼠在卡片內的位置百分比 (-0.5 ~ 0.5)
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const xc = rect.width / 2;
+                        const yc = rect.height / 2;
+                        
+                        // 旋轉幅度限制 (最大旋轉 15 度)
+                        const rotateX = ((yc - y) / yc) * 15;
+                        const rotateY = ((x - xc) / xc) * 15;
+                        
+                        // 套用 3D 旋轉效果
+                        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+                    });
+                    
+                    // 當滑鼠離開卡片時，平滑還原卡片狀態
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
