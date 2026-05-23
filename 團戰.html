@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VX 賽程 & 轉播</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e28;
+    --border: rgba(255,255,255,0.07);
+    --border-bright: rgba(255,255,255,0.14);
+    --text: #e8eaf0;
+    --text-muted: #7a7f94;
+    --text-dim: #3e4255;
+    --teal: #2dd4a0;
+    --teal-dim: rgba(45,212,160,0.10);
+    --coral: #ff6b6b;
+    --coral-dim: rgba(255,107,107,0.10);
+    --purple: #8b7eff;
+  }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .page { max-width: 760px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .hdr {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-bright);
+    flex-wrap: wrap;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease 0.05s forwards;
+  }
+  .hdr-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    color: var(--purple);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .hdr-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .hdr-title span { color: var(--purple); }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .grid > .card {
+    height: 100%;
+  }
+  @media (max-width: 540px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ── Card ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:nth-child(1) { animation-delay: 0.10s; }
+  .card:nth-child(2) { animation-delay: 0.18s; }
+  .card:hover { border-color: var(--border-bright); }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-stripe { width: 3px; height: 22px; border-radius: 2px; flex-shrink: 0; }
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    flex: 1;
+  }
+  .card-count {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+
+  .card-body { padding: 12px 0; min-height: 200px; flex: 1; }
+
+  /* ── Row item ── */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: rgba(255,255,255,0.015); }
+
+  .item-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .item-main { flex: 1; }
+  .item-title {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 2px;
+  }
+  .item-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+  }
+  .item-badge {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    border: 1px solid;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* empty state */
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    gap: 8px;
+    color: var(--text-dim);
+  }
+  .empty-icon { font-size: 28px; opacity: 0.4; }
+  .empty-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── Schedule colors ── */
+  .c-schedule .card-stripe { background: var(--teal); }
+  .c-schedule .card-title  { color: #7de8c8; }
+  .c-schedule .item-dot    { background: var(--teal); }
+  .c-schedule .item-badge  { color: var(--teal); border-color: rgba(45,212,160,0.35); background: var(--teal-dim); }
+
+  /* ── Broadcast colors ── */
+  .c-broadcast .card-stripe { background: var(--coral); }
+  .c-broadcast .card-title  { color: #ffaaaa; }
+  .c-broadcast .item-dot    { background: var(--coral); }
+  .c-broadcast .item-badge  { color: var(--coral); border-color: rgba(255,107,107,0.35); background: var(--coral-dim); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card { transform: translateY(10px); }
+  .hdr { transform: translateY(10px); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr">
+    <div>
+      <div class="hdr-label">Event Info</div>
+      <div class="hdr-title"><span>VX</span> 賽程 &amp; 轉播</div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- 比賽賽程 -->
+    <div class="card c-schedule">
+      <div class="card-head">
+        <div class="card-stripe"></div>
+        <div class="card-title">比賽賽程</div>
+        <span class="card-count" id="scheduleCount"></span>
+      </div>
+      <div class="card-body" id="scheduleBody">
+        <div class="empty">
+          <div class="empty-icon">📅</div>
+          <div class="empty-text">尚無賽程資訊</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 比賽轉播 -->
+    <div class="card c-broadcast">
+      <div class="card-head">
+        <div class="card-stripe"></div>
+        <div class="card-title">比賽轉播</div>
+        <span class="card-count" id="broadcastCount"></span>
+      </div>
+      <div class="card-body" id="broadcastBody">
+        <div class="empty">
+          <div class="empty-icon">📺</div>
+          <div class="empty-text">尚無轉播資訊</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">VX CLAN &nbsp;·&nbsp; EVENT INFO &nbsp;·&nbsp; 2025</div>
+
+</div>
+
+<!--
+  ╔══════════════════════════════════════════╗
+  ║  在這裡填入賽程與轉播資料               ║
+  ╚══════════════════════════════════════════╝
+
+  範例格式（複製貼上後修改內容即可）：
+
+  schedule: [
+    { title: 'VS 某某隊', date: '2025/05/01 20:00', badge: '友誼賽' },
+    { title: '聯賽第一輪', date: '2025/05/08 19:00', badge: '聯賽' },
+  ]
+
+  broadcasts: [
+    { title: 'VS 某某隊 直播', url: 'https://...', badge: 'YouTube' },
+    { title: '聯賽第一輪 直播', url: 'https://...', badge: 'Twitch' },
+  ]
+-->
+<script>
+const schedule = [
+  // { title: '賽事名稱', date: '日期時間', badge: '類型' },
+];
+
+const broadcasts = [
+  // { title: '轉播名稱', url: 'https://...', badge: '平台' },
+];
+
+function render() {
+  const sb = document.getElementById('scheduleBody');
+  const bb = document.getElementById('broadcastBody');
+  const sc = document.getElementById('scheduleCount');
+  const bc = document.getElementById('broadcastCount');
+
+  if (schedule.length === 0) {
+    sb.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">尚無賽程資訊</div></div>';
+  } else {
+    sc.textContent = schedule.length + ' 場';
+    sb.innerHTML = schedule.map(s => `
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-main">
+          <div class="item-title">${s.title}</div>
+          <div class="item-sub">${s.date}</div>
+        </div>
+        ${s.badge ? `<span class="item-badge">${s.badge}</span>` : ''}
+      </div>`).join('');
+  }
+
+  if (broadcasts.length === 0) {
+    bb.innerHTML = '<div class="empty"><div class="empty-icon">📺</div><div class="empty-text">尚無轉播資訊</div></div>';
+  } else {
+    bc.textContent = broadcasts.length + ' 場';
+    bb.innerHTML = broadcasts.map(b => `
+      <div class="item" ${b.url ? `style="cursor:pointer" onclick="window.open('${b.url}')"` : ''}>
+        <div class="item-dot"></div>
+        <div class="item-main">
+          <div class="item-title">${b.title}</div>
+          ${b.url ? `<div class="item-sub">${b.url}</div>` : ''}
+        </div>
+        ${b.badge ? `<span class="item-badge">${b.badge}</span>` : ''}
+      </div>`).join('');
+  }
+}
+
+render();
+</script>
+</body>
+</html>
