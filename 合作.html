@@ -21,8 +21,11 @@
             --theme-yellow: #ffea00;
             --card-border: rgba(255, 234, 0, 0.3);
             --card-border-hover: rgba(255, 234, 0, 0.8);
-            --cursor-glow-color: rgba(255, 234, 0, 0.3);
+            
+            /* 滑鼠微光專屬 */
+            --cursor-glow-color: rgba(255, 234, 0, 0.4);
             --cursor-glow-hover: rgba(0, 173, 181, 0.5);
+            --cursor-blend: screen; /* 深色模式：使用 screen 讓霓虹發光 */
             
             /* 按鈕專屬 */
             --btn-bg-hover: #ffea00;
@@ -41,8 +44,11 @@
             --theme-yellow: #0969da; /* 轉為 GitHub 經典藍 */
             --card-border: #d0d7de;
             --card-border-hover: #0969da;
-            --cursor-glow-color: rgba(9, 105, 218, 0.15);
-            --cursor-glow-hover: rgba(9, 105, 218, 0.4);
+            
+            /* 滑鼠微光專屬：調整為質感藍色，並改為 normal 避免在白底融化 */
+            --cursor-glow-color: rgba(9, 105, 218, 0.25);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.45);
+            --cursor-blend: normal;
 
             /* 按鈕專屬 */
             --btn-bg-hover: #0969da;
@@ -172,7 +178,7 @@
             z-index: 9999;
             transform: translate(-50%, -50%);
             transition: width 0.3s, height 0.3s, background 0.3s;
-            mix-blend-mode: screen;
+            mix-blend-mode: var(--cursor-blend); /* 修正：使用 CSS 變數在淺色模式正常顯色 */
             display: none;
         }
 
@@ -211,7 +217,8 @@
             width: 380px;
             text-decoration: none;
             color: var(--text-main);
-            transition: transform 0.2s ease-out, box-shadow 0.3s, border-color 0.3s;
+            /* 修正：過渡動畫在離開時由 JS 動態設定 0.5s 平滑回彈 */
+            transition: transform 0.1s ease-out, box-shadow 0.3s, border-color 0.3s;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             text-align: center;
             cursor: pointer;
@@ -267,14 +274,20 @@
                 padding-bottom: 10px;
             }
             body {
-                padding-top: 110px;
+                padding-top: 120px; /* 修正：適應手機端雙排導覽列的高度 */
             }
             .nav-menu {
                 gap: 15px;
                 width: 100%;
-                justify-content: center;
+                justify-content: flex-start; /* 修正：手機端靠左讓使用者可以滑動 */
                 overflow-x: auto;
                 padding-bottom: 5px;
+                white-space: nowrap; /* 防止折行 */
+                -webkit-overflow-scrolling: touch; /* 讓 iOS 滑動更平滑 */
+            }
+            /* 隱藏手機選單的滾動條，畫面更乾淨 */
+            .nav-menu::-webkit-scrollbar {
+                display: none;
             }
             .nav-link {
                 padding: 6px 12px;
@@ -321,7 +334,7 @@
         </div>
     </nav>
 
-    <!-- 粒子微光滑鼠隨動特效容器 -->
+    <!-- 游標微光特效容器 -->
     <div class="cursor-glow" id="cursorGlow"></div>
 
     <div class="header">
@@ -402,7 +415,7 @@
             }
 
             // ==========================================
-            // 3. 3D 卡片傾斜互動
+            // 3. 3D 卡片傾斜互動 (優化平滑回彈)
             // ==========================================
             const cards = document.querySelectorAll('.partner-card');
             if (!isTouchDevice) {
@@ -416,9 +429,15 @@
                         // 旋轉幅度限制
                         const rotateX = ((yc - y) / yc) * 15;
                         const rotateY = ((x - xc) / xc) * 15;
+                        
+                        // 移動時即時反應
+                        card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
                     });
+                    
                     card.addEventListener('mouseleave', () => {
+                        // 修正：滑鼠離開卡片時給予 0.5s 的緩動，讓卡片平滑回彈，不再有生硬跳躍感
+                        card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });
                 });

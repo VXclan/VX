@@ -37,8 +37,9 @@
             --theme-yellow: #0969da; /* 轉為 GitHub 經典藍 */
             --card-border: #d0d7de;
             --card-border-hover: #0969da;
-            --cursor-glow-color: rgba(9, 105, 218, 0.15);
-            --cursor-glow-hover: rgba(9, 105, 218, 0.4);
+            /* 調整淺色模式下的藍色滑鼠微光顏色，使其在白底上更明顯 */
+            --cursor-glow-color: rgba(9, 105, 218, 0.25);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.5);
         }
 
         * { 
@@ -58,6 +59,7 @@
             padding-top: 70px; /* 預留給固定在頂部的導覽列 */
         }
 
+        /* --- STREAMING_CHUNK: Styling navigation bar and active states... --- */
         /* --- 頂部導覽列 (Navigation Bar) --- */
         .top-nav {
             position: fixed;
@@ -145,6 +147,7 @@
             box-shadow: 0 4px 20px var(--cursor-glow-hover);
         }
         
+        /* --- STREAMING_CHUNK: Fixing interactive cursor glow mix-blend-mode... --- */
         /* --- 互動滑鼠微光 --- */
         .cursor-glow {
             position: fixed; 
@@ -156,7 +159,7 @@
             z-index: 9999; 
             transform: translate(-50%, -50%); 
             transition: width 0.3s, height 0.3s, background 0.3s;
-            mix-blend-mode: screen;
+            /* 移除 mix-blend-mode 避免淺色模式下發光隱形，改用單純的 Alpha 管道疊加 */
             display: none;
         }
 
@@ -191,6 +194,7 @@
             color: var(--text-muted);
         }
 
+        /* --- STREAMING_CHUNK: Setting up responsive breakpoint styling... --- */
         /* --- 響應式微調 (平板 & 手機端優化) --- */
         @media (max-width: 768px) {
             .top-nav {

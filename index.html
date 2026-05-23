@@ -26,15 +26,19 @@
             --theme-pulse-to: #ff9100;
             --theme-pulse-to2: #ff5500;
             --card-border: rgba(255, 255, 255, 0.08);
+            
+            /* 深色模式鼠標：黃色與青色發光 */
             --cursor-glow-color: rgba(255, 234, 0, 0.4);
             --cursor-glow-hover: rgba(0, 173, 181, 0.5);
+            --cursor-blend: screen;
         }
 
         [data-theme="light"] {
             /* 淺色主題變數 (GitHub 經典灰白藍風格) */
             --bg-main: #fafafa;
             --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
-            --bg-hero: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('背景.jpg');
+            /* 修正：移除白色的疊加遮罩，直接保留原圖色彩 */
+            --bg-hero: url('背景.jpg');
             --bg-section2: #ffffff;
             --bg-card: rgba(255, 255, 255, 0.9);
             --bg-nav: rgba(250, 250, 250, 0.85);
@@ -42,12 +46,15 @@
             --bg-feature-hover: #eaeef2;
             --text-main: #24292f;
             --text-muted: #57606a;
-            --theme-yellow: #0969da; /* 轉為 GitHub 經典藍 */
+            --theme-yellow: #0969da;
             --theme-pulse-to: #218bff;
             --theme-pulse-to2: #0550ae;
             --card-border: #d0d7de;
-            --cursor-glow-color: rgba(9, 105, 218, 0.2);
-            --cursor-glow-hover: rgba(9, 105, 218, 0.4);
+            
+            /* 淺色模式鼠標：藍色微光 */
+            --cursor-glow-color: rgba(9, 105, 218, 0.25);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.45);
+            --cursor-blend: normal;
         }
 
         * {
@@ -67,10 +74,9 @@
             background-image: var(--bg-gradient);
             color: var(--text-main);
             overflow-x: hidden;
-            padding-top: 70px; /* 預留給固定在頂部的導覽列 */
         }
 
-        /* --- 頂部導覽列 (Navigation Bar) --- */
+        /* --- 頂部導覽列 --- */
         .top-nav {
             position: fixed;
             top: 0;
@@ -129,11 +135,6 @@
             text-shadow: 0 0 8px var(--theme-yellow);
         }
 
-        .nav-actions {
-            display: flex;
-            align-items: center;
-        }
-
         /* 主題切換按鈕 */
         .theme-toggle-btn {
             background: var(--bg-card);
@@ -170,7 +171,7 @@
             z-index: 9999;
             transform: translate(-50%, -50%);
             transition: width 0.3s, height 0.3s, background 0.3s;
-            mix-blend-mode: screen;
+            mix-blend-mode: var(--cursor-blend);
             display: none;
         }
 
@@ -198,17 +199,18 @@
 
         /* 第一幕 */
         .hero-section {
-            height: calc(100vh - 70px);
+            min-height: 100vh;
             background-image: var(--bg-hero);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             display: flex;
             justify-content: center;
+            align-items: center;
+            padding-top: 70px;
         }
 
         h1 {
-            margin-top: 55vh;
             font-size: 4.5rem;
             font-weight: 900;
             color: var(--theme-yellow);
@@ -220,8 +222,8 @@
                 0 0 20px var(--theme-pulse-to);
             opacity: 0;
             transform: translateY(30px) scale(0.95);
-            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, text-shadow;
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, text-shadow, opacity;
         }
 
         h1.active {
@@ -232,9 +234,6 @@
         }
 
         @keyframes neonPulse {
-            from {
-                text-shadow: 0 0 5px var(--theme-yellow), 0 0 10px var(--theme-yellow), 0 0 20px var(--theme-pulse-to);
-            }
             to {
                 text-shadow: 0 0 10px var(--theme-yellow), 0 0 25px var(--theme-yellow), 0 0 45px var(--theme-pulse-to), 0 0 60px var(--theme-pulse-to2);
             }
@@ -248,7 +247,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 80px 20px;
+            padding: 100px 20px;
         }
 
         .container {
@@ -297,6 +296,7 @@
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.5s;
+            mix-blend-mode: var(--cursor-blend);
         }
 
         .feature-item:hover::before { opacity: 1; }
@@ -339,7 +339,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 80px 20px;
+            padding: 100px 20px;
         }
 
         .social-grid {
@@ -365,11 +365,11 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            /* 調整過渡動畫：當移出卡片時由 JS 接管，這裡保持原本的即時響應 */
             transition: transform 0.1s ease-out, box-shadow 0.3s, border-color 0.3s;
             position: relative;
             transform-style: preserve-3d;
             border: 1px solid var(--card-border);
+            will-change: transform, box-shadow;
         }
 
         .social-card .icon-wrapper, h3, p, .action-btn {
@@ -397,6 +397,16 @@
         .card-line .action-btn { background-color: #06c755; color: #ffffff; }
         .card-line:hover .action-btn { background-color: #05a044; transform: translateZ(40px) scale(1.05); }
 
+        /* 頁尾區塊 */
+        .main-footer {
+            background-color: #050507;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--card-border);
+        }
+
         /* --- 響應式微調 (平板 & 手機端優化) --- */
         @media (max-width: 768px) {
             .top-nav {
@@ -409,19 +419,18 @@
                 padding-top: 10px;
                 padding-bottom: 10px;
             }
-            body {
-                padding-top: 120px; /* 修正：提高預留高度以適應手機雙排導覽列 */
+            .hero-section {
+                padding-top: 120px;
             }
             .nav-menu {
                 gap: 15px;
                 width: 100%;
-                justify-content: flex-start; /* 修正：手機端靠左讓使用者可以滑動 */
+                justify-content: flex-start;
                 overflow-x: auto;
                 padding-bottom: 5px;
-                white-space: nowrap; /* 防止手機端標籤折行 */
-                -webkit-overflow-scrolling: touch; /* 讓 iOS 滑動更平滑 */
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
             }
-            /* 隱藏手機選單的滾動條，畫面更乾淨 */
             .nav-menu::-webkit-scrollbar {
                 display: none;
             }
@@ -433,12 +442,8 @@
                 padding: 6px 12px;
                 font-size: 0.8rem;
             }
-            .hero-section {
-                height: calc(100vh - 120px);
-            }
             h1 {
                 font-size: 3rem;
-                margin-top: 40vh;
             }
         }
     </style>
@@ -520,6 +525,11 @@
             </div>
         </div>
     </section>
+
+    <!-- 頁尾 -->
+    <footer class="main-footer">
+        <p>© 2026 VX CLAN. All rights reserved. 本網站僅供戰隊交流推廣使用。</p>
+    </footer>
 
     <!-- 交互與動畫控制腳本 -->
     <script>
@@ -647,13 +657,11 @@
                         const rotateX = ((yc - y) / yc) * 15;
                         const rotateY = ((x - xc) / xc) * 15;
                         
-                        // 確保滑鼠在卡片內移動時保持即時反應
                         card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
                     });
                     
                     card.addEventListener('mouseleave', () => {
-                        // 修正：離開卡片時給予 0.5s 的緩動，讓卡片平滑回彈，不再生硬閃爍
                         card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });

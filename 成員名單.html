@@ -22,8 +22,12 @@
             --theme-yellow: #ffea00;
             --card-border: rgba(255, 255, 255, 0.08);
             --card-border-hover: #ffea00;
-            --cursor-glow-color: rgba(255, 234, 0, 0.15);
+            
+            /* 💡 深色模式游標：經典發光霓虹 */
+            --cursor-glow-color: rgba(255, 234, 0, 0.4);
             --cursor-glow-hover: rgba(0, 173, 181, 0.5);
+            --cursor-blend: screen; /* 讓霓虹光透出來 */
+            
             --border-member-item: rgba(255, 255, 255, 0.05);
             
             /* 標籤按鈕專屬 */
@@ -42,8 +46,12 @@
             --theme-yellow: #0969da; /* 轉為 GitHub 經典藍 */
             --card-border: #d0d7de;
             --card-border-hover: #0969da;
-            --cursor-glow-color: rgba(9, 105, 218, 0.15);
-            --cursor-glow-hover: rgba(9, 105, 218, 0.4);
+            
+            /* 💡 淺色模式游標：質感 GitHub 藍色微光（使用 normal 避免被白底吃掉） */
+            --cursor-glow-color: rgba(9, 105, 218, 0.25);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.45);
+            --cursor-blend: normal;
+            
             --border-member-item: rgba(0, 0, 0, 0.06);
 
             /* 標籤按鈕專屬 */
@@ -166,7 +174,7 @@
             z-index: 9999; 
             transform: translate(-50%, -50%); 
             transition: width 0.3s, height 0.3s, background 0.3s;
-            mix-blend-mode: screen;
+            mix-blend-mode: var(--cursor-blend); /* 💡 修改這行：自動讀取深色/淺色混合模式 */
             display: none;
         }
 
@@ -180,7 +188,8 @@
         .social-card {
             background: var(--bg-card);
             border: 1px solid var(--card-border);
-            transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            /* 調整過渡：讓滑鼠離開時有流暢緩衝，在 JS 內會再動態接管 */
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
             transform-style: preserve-3d;
         }
 
@@ -237,14 +246,19 @@
                 padding-bottom: 10px;
             }
             body {
-                padding-top: 110px;
+                padding-top: 120px; /* 修正：提高預留高度以適應手機雙排導覽列 */
             }
             .nav-menu {
                 gap: 15px;
                 width: 100%;
-                justify-content: center;
+                justify-content: flex-start; /* 手機端靠左滑動更流暢 */
                 overflow-x: auto;
                 padding-bottom: 5px;
+                white-space: nowrap; /* 防止按鈕折行 */
+                -webkit-overflow-scrolling: touch;
+            }
+            .nav-menu::-webkit-scrollbar {
+                display: none; /* 隱藏手機選單滾動條 */
             }
             .nav-link {
                 padding: 6px 12px;
@@ -437,7 +451,7 @@
             }
 
             // ==========================================
-            // 3. 3D 卡片傾斜效果
+            // 3. 3D 卡片傾斜效果 (優化平滑還原)
             // ==========================================
             if (!isTouchDevice) {
                 document.querySelectorAll('.social-card').forEach(card => {
@@ -445,9 +459,15 @@
                         const rect = card.getBoundingClientRect();
                         const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
                         const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+                        
+                        // 確保滑動時即時響應
+                        card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
                     });
+                    
                     card.addEventListener('mouseleave', () => {
+                        // 離開卡片時給予 0.5s 緩動平滑回彈
+                        card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });
                 });
