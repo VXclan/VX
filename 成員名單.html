@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VX CLAN | MEMBER ROSTER</title>
+    
+    <!-- favicon 設定 -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- CSS 變數定義：支援深淺主題切換 --- */
+        :root {
+            /* 深色主題變數 (VX 戰隊經典霓虹黃與青色微光) */
+            --bg-main: #0b0b0d;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #05050a 100%);
+            --bg-nav: rgba(11, 11, 13, 0.8);
+            --bg-card: rgba(25, 25, 28, 0.6);
+            --text-main: #ffffff;
+            --text-muted: #a8a8b3;
+            --theme-yellow: #ffea00;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-border-hover: #ffea00;
+            --cursor-glow-color: rgba(255, 234, 0, 0.15);
+            --cursor-glow-hover: rgba(0, 173, 181, 0.5);
+            --border-member-item: rgba(255, 255, 255, 0.05);
+            
+            /* 標籤按鈕專屬 */
+            --role-tag-bg: #ffea00;
+            --role-tag-text: #000000;
+        }
+
+        [data-theme="light"] {
+            /* 淺色主題變數 (GitHub 經典灰白藍風格) */
+            --bg-main: #fafafa;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
+            --bg-nav: rgba(250, 250, 250, 0.85);
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-main: #24292f;
+            --text-muted: #57606a;
+            --theme-yellow: #0969da; /* 轉為 GitHub 經典藍 */
+            --card-border: #d0d7de;
+            --card-border-hover: #0969da;
+            --cursor-glow-color: rgba(9, 105, 218, 0.15);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.4);
+            --border-member-item: rgba(0, 0, 0, 0.06);
+
+            /* 標籤按鈕專屬 */
+            --role-tag-bg: #0969da;
+            --role-tag-text: #ffffff;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; 
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        body { 
+            background-color: var(--bg-main); 
+            background-image: var(--bg-gradient);
+            color: var(--text-main); 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            padding-top: 70px; /* 預留給固定在頂部的導覽列 */
+        }
+
+        /* --- 頂部導覽列 (Navigation Bar) --- */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 9990;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .nav-logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--theme-yellow);
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--theme-yellow);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--theme-yellow);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--theme-yellow);
+            border-bottom: 2px solid var(--theme-yellow);
+            border-radius: 0;
+            text-shadow: 0 0 8px var(--theme-yellow);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 主題切換按鈕 */
+        .theme-toggle-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            color: var(--theme-yellow);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--theme-yellow);
+            box-shadow: 0 4px 20px var(--cursor-glow-hover);
+        }
+        
+        /* --- 互動滑鼠微光 --- */
+        .cursor-glow {
+            position: fixed; 
+            width: 60px; 
+            height: 60px; 
+            background: radial-gradient(circle, var(--cursor-glow-color) 0%, transparent 70%);
+            border-radius: 50%; 
+            pointer-events: none; 
+            z-index: 9999; 
+            transform: translate(-50%, -50%); 
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: screen;
+            display: none;
+        }
+
+        .cursor-glow.hovered {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--cursor-glow-hover) 0%, transparent 70%);
+        }
+
+        /* --- 3D 卡片與成員樣式 --- */
+        .social-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .social-card:hover { 
+            border-color: var(--card-border-hover); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
+        }
+
+        /* 主題化卡片標題 */
+        .card-title-theme {
+            color: var(--theme-yellow);
+            text-shadow: 0 0 10px var(--cursor-glow-color);
+        }
+
+        .card-title-normal {
+            color: var(--text-main);
+        }
+
+        .role-tag { 
+            font-size: 0.6rem; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            background: var(--role-tag-bg); 
+            color: var(--role-tag-text); 
+            font-weight: bold; 
+            margin-left: 5px; 
+        }
+
+        .member-item { 
+            padding: 8px 0; 
+            border-bottom: 1px solid var(--border-member-item); 
+            color: var(--text-main);
+        }
+
+        /* 搜尋框框線主題化 */
+        #memberSearch {
+            color: var(--text-main);
+            border-bottom-color: var(--text-muted);
+        }
+        #memberSearch:focus {
+            border-bottom-color: var(--theme-yellow);
+        }
+
+        /* --- 響應式微調 (平板 & 手機端優化) --- */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 15px;
+                height: auto;
+                min-height: 60px;
+                flex-direction: column;
+                justify-content: center;
+                gap: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+            body {
+                padding-top: 110px;
+            }
+            .nav-menu {
+                gap: 15px;
+                width: 100%;
+                justify-content: center;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+            .nav-link {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            .theme-toggle-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <!-- 頂部導覽列 -->
+    <nav class="top-nav">
+        <!-- 戰隊 LOGO -->
+        <a href="index.html" class="nav-logo">VX CLAN</a>
+        
+        <!-- 選單項目 -->
+        <ul class="nav-menu">
+            <li><a href="index.html" class="nav-link">首頁</a></li>
+            <li><a href="成員名單.html" class="nav-link active">成員名單</a></li>
+            <li><a href="團戰.html" class="nav-link">團戰賽程</a></li>
+            <li><a href="合作.html" class="nav-link">合作夥伴</a></li>
+        </ul>
+        
+        <!-- 操作按鈕 -->
+        <div class="nav-actions">
+            <button id="themeToggle" class="theme-toggle-btn">
+                <span id="themeIcon">🌙</span> <span id="themeText">深色模式</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 粒子微光滑鼠隨動特效容器 -->
+    <div class="cursor-glow"></div>
+
+    <header class="max-w-4xl mx-auto text-center py-16">
+        <h1 class="text-5xl font-bold mb-4 tracking-tighter">VX CLAN <span class="card-title-theme">ROSTER</span></h1>
+        <p class="text-gray-500 mb-8">總人數：34 人</p>
+        <input type="text" id="memberSearch" placeholder="搜尋隊員名稱..." 
+               class="bg-transparent border-b outline-none w-64 text-center py-2 text-lg transition-colors">
+    </header>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
+        
+        <!-- 管理層 -->
+        <div class="social-card p-6 rounded-2xl">
+            <h3 class="text-lg font-bold mb-4 card-title-theme">戰隊管理層</h3>
+            <div class="member-item">@Vx4cE_Jimmy <span class="role-tag">團長</span></div>
+            <div class="member-item">@Konjac <span class="role-tag">副團長</span></div>
+        </div>
+
+        <!-- VXN 小刀菁英 -->
+        <div class="social-card p-6 rounded-2xl">
+            <h3 class="text-lg font-bold mb-4 card-title-normal">小刀菁英｜VXN</h3>
+            <div class="text-sm h-64 overflow-y-auto">
+                <div class="member-item">@KnR_Lin <span class="role-tag">團長</span></div>
+                <div class="member-item">@最菜荒野玩家 <span class="role-tag">副團/考官</span></div>
+                <div class="member-item">@TSB郭志麒 <span class="role-tag">考官</span></div>
+                <div class="member-item">@LVSS</div> <div class="member-item">@Konjac</div> <div class="member-item">@Yoyo109111</div>
+                <div class="member-item">@VXN_NCRVC</div> <div class="member-item">@Vx4cE_Jimmy</div> <div class="member-item">@iii123123111</div>
+                <div class="member-item">@你Daddy</div> <div class="member-item">@FRee sea</div> <div class="member-item">@𝕰𝕷 𝕬𝕷𝕰𝖃</div>
+                <div class="member-item">@JJKK50702</div> <div class="member-item">@蟑螂</div> <div class="member-item">@123456789</div>
+                <div class="member-item">@i am your dad</div> <div class="member-item">VXN_JASON</div> <div class="member-item">VXN_IQ180</div>
+                <div class="member-item">VXN_skpn7DK</div> <div class="member-item">00_10B</div> <div class="member-item">VXN_PhilipBall18469</div>
+            </div>
+        </div>
+
+        <!-- VXA 步槍菁英 -->
+        <div class="social-card p-6 rounded-2xl">
+            <h3 class="text-lg font-bold mb-4 card-title-normal">步槍菁英｜VXA</h3>
+            <div class="text-sm">
+                <div class="member-item">@Sgo1y <span class="role-tag">團長</span></div>
+                <div class="member-item">@Konjac <span class="role-tag">副團</span></div>
+                <div class="member-item">@Vx4cE_Jimmy</div> <div class="member-item">@CS</div>
+                <div class="member-item">@吳威家</div> <div class="member-item">@ian</div>
+                <div class="member-item">@友好:3</div> <div class="member-item">@約跑大王</div>
+                <div class="member-item">@₮Ø₥₥Ɏ(っ◔◡◔) <span class="role-tag">考官</span></div>
+                <div class="member-item">@jimmy哥</div>
+            </div>
+        </div>
+
+        <!-- VXS 狙擊菁英 -->
+        <div class="social-card p-6 rounded-2xl">
+            <h3 class="text-lg font-bold mb-4 card-title-normal">狙擊菁英｜VXS</h3>
+            <div class="text-sm">
+                <div class="member-item">@Vx4cE_Jimmy <span class="role-tag">團長</span></div>
+                <div class="member-item">@Konjac <span class="role-tag">副團/考官</span></div>
+                <div class="member-item">@CS</div> <div class="member-item">@ian</div>
+                <div class="member-item">@STN_XTN</div>
+            </div>
+        </div>
+
+        <!-- VX 普通團 -->
+        <div class="social-card p-6 rounded-2xl">
+            <h3 class="text-lg font-bold mb-4 card-title-normal">普通團｜VX</h3>
+            <div class="text-sm">
+                <div class="member-item">@ジ魅殇メ</div> <div class="member-item">VX_wow</div>
+                <div class="member-item">@123456789</div> <div class="member-item">@masonwu0709</div>
+                <div class="member-item">@.</div>
+            </div>
+        </div>
+
+        <!-- 王牌名單 -->
+        <div class="social-card p-6 rounded-2xl">
+            <h3 class="text-lg font-bold mb-4 card-title-theme">VX 王牌｜Vx4cE</h3>
+            <div class="text-sm">
+                <div class="member-item">@Vx4cE_Jimmy</div>
+                <div class="member-item">@Konjac <span class="role-tag">團長/考官</span></div>
+                <div class="member-item">@KnR_Lin</div>
+                <div class="member-item">@最菜荒野玩家</div>
+            </div>
+        </div>
+
+        <!-- 管理員名單 -->
+        <div class="social-card p-6 rounded-2xl">
+            <h3 class="text-lg font-bold mb-4 card-title-theme">管理員名單</h3>
+            <div class="text-sm">
+                <div class="member-item">@Vx4cE_Jimmy</div>
+                <div class="member-item">@Konjac</div>
+                <div class="member-item">@Sgo1y</div>
+                <div class="member-item">@LVSS</div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // ==========================================
+            // 1. 深淺主題切換邏輯 (LocalStorage 記憶)
+            // ==========================================
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            // 讀取先前儲存的主題，預設為深色模式
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeUI(savedTheme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+
+            function updateThemeUI(theme) {
+                if (theme === 'dark') {
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = '深色模式';
+                } else {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = '淺色模式';
+                }
+            }
+
+            // ==========================================
+            // 2. 微光游標隨動與互動縮放
+            // ==========================================
+            const cursor = document.querySelector('.cursor-glow');
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            if (!isTouchDevice) {
+                cursor.style.display = 'block'; // 只有電腦端才顯示游標隨動
+                
+                document.addEventListener('mousemove', (e) => {
+                    requestAnimationFrame(() => {
+                        cursor.style.left = e.clientX + 'px';
+                        cursor.style.top = e.clientY + 'px';
+                    });
+                });
+
+                // 連動所有互動元素，滑鼠移入時放大微光
+                const updateInteractiveListeners = () => {
+                    const interactiveElements = document.querySelectorAll(
+                        '.social-card, #memberSearch, .theme-toggle-btn, .nav-link, .nav-logo'
+                    );
+                    interactiveElements.forEach(el => {
+                        el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                        el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+                    });
+                };
+                updateInteractiveListeners();
+            }
+
+            // ==========================================
+            // 3. 3D 卡片傾斜效果
+            // ==========================================
+            if (!isTouchDevice) {
+                document.querySelectorAll('.social-card').forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+                        const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+                        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
+                    });
+                });
+            }
+
+            // ==========================================
+            // 4. 成員快速搜尋邏輯
+            // ==========================================
+            document.getElementById('memberSearch').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                document.querySelectorAll('.member-item').forEach(item => {
+                    item.style.display = item.textContent.toLowerCase().includes(query) ? 'block' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

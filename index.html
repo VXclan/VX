@@ -4,24 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VX</title>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VX</title>
     
-    <!-- 加入這一行 favicon 設定 -->
+    <!-- favicon 設定 -->
     <link rel="icon" type="image/png" href="favicon.png">
     
     <style>
-        /* ... 你原本的 CSS ... */
-    </style>
-</head>
-    <style>
+        /* --- CSS 變數定義：支援深淺主題切換 --- */
+        :root {
+            /* 深色主題變數 (VX 戰隊經典霓虹黃與青色微光) */
+            --bg-main: #0b0b0d;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #05050a 100%);
+            --bg-hero: url('背景.jpg');
+            --bg-section2: #121216;
+            --bg-card: rgba(18, 18, 22, 0.85);
+            --bg-nav: rgba(11, 11, 13, 0.8);
+            --bg-feature: #1a1a22;
+            --bg-feature-hover: #20202a;
+            --text-main: #ffffff;
+            --text-muted: #a8a8b3;
+            --theme-yellow: #ffea00;
+            --theme-pulse-to: #ff9100;
+            --theme-pulse-to2: #ff5500;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --cursor-glow-color: rgba(255, 234, 0, 0.4);
+            --cursor-glow-hover: rgba(0, 173, 181, 0.5);
+        }
+
+        [data-theme="light"] {
+            /* 淺色主題變數 (GitHub 經典灰白藍風格) */
+            --bg-main: #fafafa;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
+            --bg-hero: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('背景.jpg');
+            --bg-section2: #ffffff;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-nav: rgba(250, 250, 250, 0.85);
+            --bg-feature: #f6f8fa;
+            --bg-feature-hover: #eaeef2;
+            --text-main: #24292f;
+            --text-muted: #57606a;
+            --theme-yellow: #0969da; /* 轉為 GitHub 經典藍 */
+            --theme-pulse-to: #218bff;
+            --theme-pulse-to2: #0550ae;
+            --card-border: #d0d7de;
+            --cursor-glow-color: rgba(9, 105, 218, 0.2);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.4);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
         }
 
         html {
@@ -29,16 +63,105 @@
         }
 
         body {
-            background-color: #0b0b0d;
-            color: #ffffff;
+            background-color: var(--bg-main);
+            background-image: var(--bg-gradient);
+            color: var(--text-main);
             overflow-x: hidden;
+            padding-top: 70px; /* 預留給固定在頂部的導覽列 */
+        }
+
+        /* --- 頂部導覽列 (Navigation Bar) --- */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 9990; /* 確保在一般內容之上，但在 cursor-glow 之下 */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .nav-logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--theme-yellow);
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--theme-yellow);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--theme-yellow);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--theme-yellow);
+            border-bottom: 2px solid var(--theme-yellow);
+            border-radius: 0;
+            text-shadow: 0 0 8px var(--theme-yellow);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 主題切換按鈕調整 */
+        .theme-toggle-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            color: var(--theme-yellow);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--theme-yellow);
+            box-shadow: 0 4px 20px var(--cursor-glow-hover);
         }
 
         /* --- 互動滑鼠微光 --- */
         .cursor-glow {
             width: 40px;
             height: 40px;
-            background: radial-gradient(circle, rgba(255, 234, 0, 0.4) 0%, rgba(255, 145, 0, 0) 70%);
+            background: radial-gradient(circle, var(--cursor-glow-color) 0%, rgba(255, 145, 0, 0) 70%);
             border-radius: 50%;
             position: fixed;
             top: 0;
@@ -48,14 +171,13 @@
             transform: translate(-50%, -50%);
             transition: width 0.3s, height 0.3s, background 0.3s;
             mix-blend-mode: screen;
-            display: none; /* 預設隱藏，有滑鼠的裝置才會被 JS 啟動 */
+            display: none;
         }
 
-        /* 當滑鼠移到可互動元素上時，微光放大並變色 */
         .cursor-glow.hovered {
             width: 80px;
             height: 80px;
-            background: radial-gradient(circle, rgba(0, 173, 181, 0.5) 0%, rgba(0, 173, 181, 0) 70%);
+            background: radial-gradient(circle, var(--cursor-glow-hover) 0%, rgba(0, 173, 181, 0) 70%);
         }
 
         /* --- 動畫基礎設定 --- */
@@ -65,22 +187,10 @@
             will-change: transform, opacity;
         }
 
-        /* 向上漸顯 */
-        .fade-up {
-            transform: translateY(60px);
-        }
+        .fade-up { transform: translateY(60px); }
+        .fade-left { transform: translateX(-50px); }
+        .scale-up { transform: scale(0.9); }
 
-        /* 向右滑入 */
-        .fade-left {
-            transform: translateX(-50px);
-        }
-
-        /* 縮放漸顯 */
-        .scale-up {
-            transform: scale(0.9);
-        }
-
-        /* 啟用動畫後的狀態 */
         .reveal.active {
             opacity: 1;
             transform: translate(0, 0) scale(1);
@@ -88,8 +198,8 @@
 
         /* 第一幕 */
         .hero-section {
-            height: 100vh;
-            background-image: url('背景.jpg');
+            height: calc(100vh - 70px);
+            background-image: var(--bg-hero);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -98,17 +208,17 @@
         }
 
         h1 {
-            margin-top: 65vh;
+            margin-top: 55vh;
             font-size: 4.5rem;
             font-weight: 900;
-            color: #ffea00;
+            color: var(--theme-yellow);
             letter-spacing: 8px;
             text-transform: uppercase;
             text-shadow: 
-                0 0 5px #ffea00,
-                0 0 10px #ffea00,
-                0 0 20px #ff9100,
-                0 0 40px #ff9100;
+                0 0 5px var(--theme-yellow),
+                0 0 10px var(--theme-yellow),
+                0 0 20px var(--theme-pulse-to),
+                0 0 40px var(--theme-pulse-to);
             opacity: 0;
             transform: translateY(30px) scale(0.95);
             transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -118,25 +228,16 @@
             opacity: 1;
             transform: translateY(0) scale(1);
             animation: neonPulse 2s ease-in-out infinite alternate;
-            animation-delay: 1.2s; /* 登場動畫完畢後再啟動呼吸燈 */
+            animation-delay: 1.2s;
         }
 
         @keyframes neonPulse {
             from {
-                text-shadow: 
-                    0 0 5px #ffea00,
-                    0 0 10px #ffea00,
-                    0 0 20px #ff9100,
-                    0 0 30px #ff9100;
+                text-shadow: 0 0 5px var(--theme-yellow), 0 0 10px var(--theme-yellow), 0 0 20px var(--theme-pulse-to);
                 transform: scale(1);
             }
             to {
-                text-shadow: 
-                    0 0 10px #ffea00,
-                    0 0 25px #ffea00,
-                    0 0 45px #ff9100,
-                    0 0 60px #ff5500,
-                    0 0 80px #ff5500;
+                text-shadow: 0 0 10px var(--theme-yellow), 0 0 25px var(--theme-yellow), 0 0 45px var(--theme-pulse-to), 0 0 60px var(--theme-pulse-to2), 0 0 80px var(--theme-pulse-to2);
                 transform: scale(1.03);
             }
         }
@@ -144,7 +245,7 @@
         /* 第二幕 */
         .second-section {
             min-height: 100vh;
-            background-color: #121216;
+            background-color: var(--bg-section2);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -160,10 +261,10 @@
 
         h2 {
             font-size: 2.5rem;
-            color: #ffea00;
+            color: var(--theme-yellow);
             margin-bottom: 50px;
             letter-spacing: 4px;
-            text-shadow: 0 0 15px rgba(255, 234, 0, 0.4);
+            text-shadow: 0 0 15px rgba(255, 234, 0, 0.2);
         }
 
         .feature-list {
@@ -173,21 +274,19 @@
             margin-bottom: 50px;
         }
 
-        /* 互動式特色項目 */
         .feature-item {
-            background: #1a1a22;
+            background: var(--bg-feature);
             padding: 25px 30px;
             border-radius: 12px;
-            border-left: 5px solid #ffea00;
+            border-left: 5px solid var(--theme-yellow);
             font-size: 1.3rem;
             text-align: left;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, border-color 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        /* 特色卡片的探照發光背景效果 */
         .feature-item::before {
             content: '';
             position: absolute;
@@ -195,40 +294,38 @@
             left: var(--x, 0);
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(255, 234, 0, 0.08) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, var(--cursor-glow-color) 0%, rgba(255,255,255,0) 70%);
             transform: translate(-50%, -50%);
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.5s;
         }
 
-        .feature-item:hover::before {
-            opacity: 1;
-        }
+        .feature-item:hover::before { opacity: 1; }
 
         .feature-item:hover {
             transform: translateX(10px);
-            box-shadow: 0 5px 25px rgba(255, 234, 0, 0.15);
-            background: #20202a;
+            box-shadow: 0 5px 25px var(--cursor-glow-color);
+            background: var(--bg-feature-hover);
         }
 
         .alliance-card {
-            background: linear-gradient(135deg, #1e1e26 0%, #15151c 100%);
+            background: var(--bg-feature);
             padding: 35px;
             border-radius: 16px;
-            border: 2px dashed #ffea00;
-            box-shadow: 0 0 20px rgba(255, 234, 0, 0.1);
-            transition: box-shadow 0.3s, transform 0.3s;
+            border: 2px dashed var(--theme-yellow);
+            box-shadow: 0 0 20px rgba(255, 234, 0, 0.05);
+            transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
         }
 
         .alliance-card:hover {
-            box-shadow: 0 0 30px rgba(255, 234, 0, 0.25);
+            box-shadow: 0 0 30px var(--cursor-glow-color);
             transform: scale(1.02);
         }
 
         .alliance-name {
             font-size: 1.5rem;
-            color: #ffffff;
+            color: var(--text-main);
             font-weight: 700;
             letter-spacing: 1px;
         }
@@ -236,7 +333,7 @@
         /* 第三幕 */
         .third-section {
             min-height: 100vh;
-            background-image: url('背景.jpg');
+            background-image: var(--bg-hero);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -247,7 +344,6 @@
             padding: 80px 20px;
         }
 
-        /* 3D 傾斜容器 */
         .social-grid {
             display: flex;
             justify-content: center;
@@ -255,135 +351,115 @@
             flex-wrap: wrap;
             margin-top: 30px;
             width: 100%;
-            perspective: 1000px; /* 3D 空間透視距離 */
+            perspective: 1000px;
         }
 
         .social-card {
-            background: rgba(18, 18, 22, 0.85);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: 24px;
             padding: 50px 30px;
             width: 340px;
             text-decoration: none;
-            color: #ffffff;
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             transition: transform 0.1s ease-out, box-shadow 0.3s, border-color 0.3s;
             position: relative;
-            transform-style: preserve-3d; /* 讓子元素支援 3D 層次 */
+            transform-style: preserve-3d;
+            border: 1px solid var(--card-border);
         }
 
-        /* 3D 特效子元素突起效果 */
-        .social-card .icon-wrapper,
-        .social-card h3,
-        .social-card p,
-        .social-card .action-btn {
-            transform: translateZ(30px); /* 滑鼠移入時，文字跟圖標會立體懸浮高於卡片表面 */
+        .social-card .icon-wrapper, h3, p, .action-btn {
+            transform: translateZ(30px);
             transition: transform 0.3s ease;
         }
 
-        /* Discord 卡片外觀與懸停發光 */
-        .card-discord {
-            border: 2px solid #5865f2;
-            box-shadow: 0 10px 30px rgba(88, 101, 242, 0.15);
-        }
+        .card-discord { border: 2px solid #5865f2; box-shadow: 0 10px 30px rgba(88, 101, 242, 0.15); }
+        .card-discord:hover { box-shadow: 0 20px 50px rgba(88, 101, 242, 0.5); }
+        .card-line { border: 2px solid #06c755; box-shadow: 0 10px 30px rgba(6, 199, 85, 0.15); }
+        .card-line:hover { box-shadow: 0 20px 50px rgba(6, 199, 85, 0.5); }
 
-        .card-discord:hover {
-            box-shadow: 0 20px 50px rgba(88, 101, 242, 0.6);
-        }
+        .icon-wrapper { width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; transition: transform 0.3s ease; }
+        .social-card:hover .icon-wrapper { transform: translateZ(50px) scale(1.15) rotate(5deg); }
+        .icon-wrapper svg { width: 100%; height: 100%; }
+        .card-discord .icon-wrapper svg { filter: drop-shadow(0 0 10px rgba(88, 101, 242, 0.6)); }
+        .card-line .icon-wrapper svg { filter: drop-shadow(0 0 10px rgba(6, 199, 85, 0.6)); }
 
-        /* LINE 卡片外觀與懸停發光 */
-        .card-line {
-            border: 2px solid #06c755;
-            box-shadow: 0 10px 30px rgba(6, 199, 85, 0.15);
-        }
+        .social-card h3 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; color: var(--text-main); }
+        .social-card p { font-size: 1rem; color: var(--text-muted); margin-bottom: 35px; line-height: 1.6; flex-grow: 1; }
 
-        .card-line:hover {
-            box-shadow: 0 20px 50px rgba(6, 199, 85, 0.6);
-        }
+        .action-btn { width: 100%; padding: 12px 0; border-radius: 50px; font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; transition: transform 0.3s, background-color 0.3s; }
+        .card-discord .action-btn { background-color: #5865f2; color: #ffffff; }
+        .card-discord:hover .action-btn { background-color: #4752c4; transform: translateZ(40px) scale(1.05); }
+        .card-line .action-btn { background-color: #06c755; color: #ffffff; }
+        .card-line:hover .action-btn { background-color: #05a044; transform: translateZ(40px) scale(1.05); }
 
-        /* 圖標外層容器 */
-        .icon-wrapper {
-            width: 75px;
-            height: 75px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            transition: transform 0.3s ease;
-        }
-
-        .social-card:hover .icon-wrapper {
-            transform: translateZ(50px) scale(1.15) rotate(5deg); /* 圖標會以更大弧度突起並旋轉 */
-        }
-
-        .icon-wrapper svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Discord 圖標顏色 */
-        .card-discord .icon-wrapper svg {
-            filter: drop-shadow(0 0 10px rgba(88, 101, 242, 0.6));
-        }
-
-        /* LINE 圖標顏色 */
-        .card-line .icon-wrapper svg {
-            filter: drop-shadow(0 0 10px rgba(6, 199, 85, 0.6));
-        }
-
-        /* 卡片文字排版 */
-        .social-card h3 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-        }
-
-        .social-card p {
-            font-size: 1rem;
-            color: #a8a8b3;
-            margin-bottom: 35px;
-            line-height: 1.6;
-            flex-grow: 1;
-        }
-
-        /* 立即加入按鈕樣式 */
-        .action-btn {
-            width: 100%;
-            padding: 12px 0;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            transition: transform 0.3s, background-color 0.3s;
-        }
-
-        .card-discord .action-btn {
-            background-color: #5865f2;
-            color: #ffffff;
-        }
-
-        .card-discord:hover .action-btn {
-            background-color: #4752c4;
-            transform: translateZ(40px) scale(1.05);
-        }
-
-        .card-line .action-btn {
-            background-color: #06c755;
-            color: #ffffff;
-        }
-
-        .card-line:hover .action-btn {
-            background-color: #05a044;
-            transform: translateZ(40px) scale(1.05);
+        /* --- 響應式微調 (平板 & 手機端優化) --- */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 15px;
+                height: auto;
+                min-height: 60px;
+                flex-direction: column;
+                justify-content: center;
+                gap: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+            body {
+                padding-top: 110px; /* 手機端兩排所以要留更多高度 */
+            }
+            .nav-menu {
+                gap: 15px;
+                width: 100%;
+                justify-content: center;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+            .nav-link {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            .theme-toggle-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .hero-section {
+                height: calc(100vh - 110px);
+            }
+            h1 {
+                font-size: 3rem;
+                margin-top: 45vh;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- 頂部導覽列 -->
+    <nav class="top-nav">
+        <!-- 戰隊 LOGO -->
+        <a href="index.html" class="nav-logo">VX CLAN</a>
+        
+        <!-- 選單項目 -->
+        <ul class="nav-menu">
+            <li><a href="index.html" class="nav-link active">首頁</a></li>
+            <li><a href="成員名單.html" class="nav-link">成員名單</a></li>
+            <li><a href="團戰.html" class="nav-link">團戰賽程</a></li>
+            <li><a href="合作.html" class="nav-link">合作夥伴</a></li>
+        </ul>
+        
+        <!-- 操作按鈕 -->
+        <div class="nav-actions">
+            <button id="themeToggle" class="theme-toggle-btn">
+                <span id="themeIcon">🌙</span> <span id="themeText">深色模式</span>
+            </button>
+        </div>
+    </nav>
 
     <!-- 粒子微光滑鼠隨動特效容器 -->
     <div id="cursor-glow" class="cursor-glow"></div>
@@ -405,7 +481,7 @@
             </div>
 
             <div class="alliance-card reveal scale-up" style="transition-delay: 0.2s;">
-                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽𝓮𝓭 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓷𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
+                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽eｄ 𝓣eam 𝓒ouncıl [𝓡.𝓤.𝓣.𝓒]</div>
             </div>
         </div>
     </section>
@@ -440,6 +516,7 @@
                     <div class="action-btn">立即加入</div>
                 </a>
             </div>
+
         </div>
     </section>
 
@@ -447,7 +524,38 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // ==========================================
-            // 1. 首頁主標題登場動畫
+            // 1. 深淺主題切換邏輯 (LocalStorage 記憶)
+            // ==========================================
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            // 讀取先前儲存的主題，預設為深色模式
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeUI(savedTheme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+
+            function updateThemeUI(theme) {
+                if (theme === 'dark') {
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = '深色模式';
+                } else {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = '淺色模式';
+                }
+            }
+
+            // ==========================================
+            // 2. 首頁主標題登場動畫
             // ==========================================
             const heroTitle = document.getElementById('hero-title');
             if (heroTitle) {
@@ -457,7 +565,7 @@
             }
 
             // ==========================================
-            // 2. 滾動偵測（偵測元素是否進入畫面中）
+            // 3. 滾動偵測（偵測元素是否進入畫面中）
             // ==========================================
             const revealElements = document.querySelectorAll('.reveal');
             
@@ -471,17 +579,17 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
-                        observer.unobserve(entry.target);
+                        revealObserver.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
-
+ 
             revealElements.forEach(element => {
                 revealObserver.observe(element);
             });
 
             // ==========================================
-            // 3. 微光游標隨動與互動縮放
+            // 4. 微光游標隨動與互動縮放
             // ==========================================
             const cursorGlow = document.getElementById('cursor-glow');
             
@@ -499,20 +607,21 @@
                     });
                 });
 
-                // 讓滑鼠移到卡片或按鈕上時，微光放大並轉為青色
-                const interactiveElements = document.querySelectorAll('.social-card, .feature-item, .alliance-card');
-                interactiveElements.forEach(el => {
-                    el.addEventListener('mouseenter', () => {
-                        cursorGlow.classList.add('hovered');
+                // 連動所有互動元素，滑鼠移入時放大微光
+                const updateInteractiveListeners = () => {
+                    const interactiveElements = document.querySelectorAll(
+                        '.social-card, .feature-item, .alliance-card, .theme-toggle-btn, .nav-link, .nav-logo'
+                    );
+                    interactiveElements.forEach(el => {
+                        el.addEventListener('mouseenter', () => cursorGlow.classList.add('hovered'));
+                        el.addEventListener('mouseleave', () => cursorGlow.classList.remove('hovered'));
                     });
-                    el.addEventListener('mouseleave', () => {
-                        cursorGlow.classList.remove('hovered');
-                    });
-                });
+                };
+                updateInteractiveListeners();
             }
 
             // ==========================================
-            // 4. 第二幕：特色項目雷射追蹤微光
+            // 5. 第二幕：特色項目雷射追蹤微光
             // ==========================================
             const featureItems = document.querySelectorAll('.feature-item');
             featureItems.forEach(item => {
@@ -526,7 +635,7 @@
             });
 
             // ==========================================
-            // 5. 第三幕：3D Card Tilt 立體傾斜效果
+            // 6. 第三幕：3D Card Tilt 立體傾斜效果
             // ==========================================
             const cards = document.querySelectorAll('.social-card');
             

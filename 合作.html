@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VX Clan | 合作夥伴</title>
+    
+    <!-- favicon 設定 -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <style>
+        /* --- CSS 變數定義：支援深淺主題切換 --- */
+        :root {
+            /* 深色主題變數 (VX 戰隊經典霓虹黃與青色微光) */
+            --bg-main: #0b0b0d;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #05050a 100%);
+            --bg-nav: rgba(11, 11, 13, 0.8);
+            --bg-card: rgba(18, 18, 22, 0.9);
+            --text-main: #ffffff;
+            --text-muted: #a8a8b3;
+            --theme-yellow: #ffea00;
+            --card-border: rgba(255, 234, 0, 0.3);
+            --card-border-hover: rgba(255, 234, 0, 0.8);
+            --cursor-glow-color: rgba(255, 234, 0, 0.3);
+            --cursor-glow-hover: rgba(0, 173, 181, 0.5);
+            
+            /* 按鈕專屬 */
+            --btn-bg-hover: #ffea00;
+            --btn-text-hover: #000000;
+            --btn-shadow-hover: rgba(255, 234, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            /* 淺色主題變數 (GitHub 經典灰白藍風格) */
+            --bg-main: #fafafa;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
+            --bg-nav: rgba(250, 250, 250, 0.85);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --text-main: #24292f;
+            --text-muted: #57606a;
+            --theme-yellow: #0969da; /* 轉為 GitHub 經典藍 */
+            --card-border: #d0d7de;
+            --card-border-hover: #0969da;
+            --cursor-glow-color: rgba(9, 105, 218, 0.15);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.4);
+
+            /* 按鈕專屬 */
+            --btn-bg-hover: #0969da;
+            --btn-text-hover: #ffffff;
+            --btn-shadow-hover: rgba(9, 105, 218, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-main);
+            background-image: var(--bg-gradient);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 70px; /* 預留給固定在頂部的導覽列 */
+        }
+
+        /* --- 頂部導覽列 (Navigation Bar) --- */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 9990;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .nav-logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--theme-yellow);
+            text-decoration: none;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--theme-yellow);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--theme-yellow);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--theme-yellow);
+            border-bottom: 2px solid var(--theme-yellow);
+            border-radius: 0;
+            text-shadow: 0 0 8px var(--theme-yellow);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 主題切換按鈕 */
+        .theme-toggle-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            color: var(--theme-yellow);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--theme-yellow);
+            box-shadow: 0 4px 20px var(--cursor-glow-hover);
+        }
+
+        /* --- 互動滑鼠微光 (對應戰隊風格) --- */
+        .cursor-glow {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, var(--cursor-glow-color) 0%, rgba(255, 145, 0, 0) 70%);
+            border-radius: 50%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: screen;
+            display: none;
+        }
+
+        .cursor-glow.hovered {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--cursor-glow-hover) 0%, rgba(0, 173, 181, 0) 70%);
+        }
+
+        /* 霓虹標題 */
+        .header { margin-top: 100px; text-align: center; margin-bottom: 60px; }
+        h1 { 
+            font-size: 3.5rem; 
+            color: var(--theme-yellow); 
+            text-shadow: 0 0 15px var(--theme-yellow), 0 0 30px var(--cursor-glow-color); 
+            letter-spacing: 8px; 
+            text-transform: uppercase;
+        }
+
+        /* 3D 卡片容器 */
+        .partner-grid {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            padding: 20px;
+            perspective: 1000px;
+            margin-bottom: 80px;
+        }
+
+        .partner-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 380px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: transform 0.2s ease-out, box-shadow 0.3s, border-color 0.3s;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            cursor: pointer;
+            transform-style: preserve-3d;
+        }
+
+        .partner-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .partner-card:hover {
+            box-shadow: 0 0 40px var(--cursor-glow-color);
+            border-color: var(--card-border-hover);
+        }
+
+        .partner-name { 
+            font-size: 1.4rem; 
+            font-weight: bold; 
+            margin-bottom: 25px; 
+            display: block; 
+            color: var(--theme-yellow); 
+            text-shadow: 0 0 10px var(--cursor-glow-color);
+        }
+        
+        .btn { 
+            display: inline-block; 
+            padding: 12px 30px; 
+            border: 1px solid var(--theme-yellow); 
+            border-radius: 30px; 
+            color: var(--theme-yellow); 
+            text-decoration: none; 
+            margin-top: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn:hover { 
+            background: var(--btn-bg-hover); 
+            color: var(--btn-text-hover); 
+            box-shadow: 0 0 20px var(--btn-shadow-hover);
+        }
+
+        /* --- 響應式微調 (平板 & 手機端優化) --- */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 15px;
+                height: auto;
+                min-height: 60px;
+                flex-direction: column;
+                justify-content: center;
+                gap: 10px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+            body {
+                padding-top: 110px;
+            }
+            .nav-menu {
+                gap: 15px;
+                width: 100%;
+                justify-content: center;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+            .nav-link {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            .theme-toggle-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            .header {
+                margin-top: 50px;
+                margin-bottom: 40px;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            .partner-card {
+                width: 90%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 頂部導覽列 -->
+    <nav class="top-nav">
+        <!-- 戰隊 LOGO -->
+        <a href="index.html" class="nav-logo">VX CLAN</a>
+        
+        <!-- 選單項目 -->
+        <ul class="nav-menu">
+            <li><a href="index.html" class="nav-link">首頁</a></li>
+            <li><a href="成員名單.html" class="nav-link">成員名單</a></li>
+            <li><a href="團戰.html" class="nav-link">團戰賽程</a></li>
+            <li><a href="合作.html" class="nav-link active">合作夥伴</a></li>
+        </ul>
+        
+        <!-- 操作按鈕 -->
+        <div class="nav-actions">
+            <button id="themeToggle" class="theme-toggle-btn">
+                <span id="themeIcon">🌙</span> <span id="themeText">深色模式</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 粒子微光滑鼠隨動特效容器 -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <div class="header">
+        <h1>合作夥伴</h1>
+    </div>
+
+    <div class="partner-grid">
+        <!-- 合作對象 1 -->
+        <a href="https://discord.gg/5gcSAqvMRm" target="_blank" class="partner-card">
+            <span class="partner-name">𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽𝓮𝓭 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓷𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</span>
+            <p>專業團隊，強強聯手</p>
+            <div class="btn">加入 Discord</div>
+        </a>
+
+        <!-- 合作對象 2 -->
+        <a href="https://discord.gg/SXn5uUQAub" target="_blank" class="partner-card">
+            <span class="partner-name">🔥Lin的男娘交流群🔥</span>
+            <p>熱絡社群，誠摯交流</p>
+            <div class="btn">加入 Discord</div>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // ==========================================
+            // 1. 深淺主題切換邏輯 (LocalStorage 記憶)
+            // ==========================================
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            // 讀取先前儲存的主題，預設為深色模式
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeUI(savedTheme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+
+            function updateThemeUI(theme) {
+                if (theme === 'dark') {
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = '深色模式';
+                } else {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = '淺色模式';
+                }
+            }
+
+            // ==========================================
+            // 2. 微光游標隨動與互動縮放
+            // ==========================================
+            const cursor = document.getElementById('cursorGlow');
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            if (!isTouchDevice) {
+                cursor.style.display = 'block'; // 只有電腦端才顯示游標隨動
+                
+                document.addEventListener('mousemove', (e) => {
+                    requestAnimationFrame(() => {
+                        cursor.style.left = e.clientX + 'px';
+                        cursor.style.top = e.clientY + 'px';
+                    });
+                });
+
+                // 讓滑鼠移到卡片或按鈕上時，微光放大
+                const interactiveElements = document.querySelectorAll('.partner-card, .btn, .theme-toggle-btn, .nav-link, .nav-logo');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+                });
+            }
+
+            // ==========================================
+            // 3. 3D 卡片傾斜互動
+            // ==========================================
+            const cards = document.querySelectorAll('.partner-card');
+            if (!isTouchDevice) {
+                cards.forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const xc = rect.width / 2;
+                        const yc = rect.height / 2;
+                        // 旋轉幅度限制
+                        const rotateX = ((yc - y) / yc) * 15;
+                        const rotateY = ((x - xc) / xc) * 15;
+                        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
