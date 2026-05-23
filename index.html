@@ -37,8 +37,10 @@
             /* 淺色主題變數 (GitHub 經典灰白藍風格) */
             --bg-main: #fafafa;
             --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
-            /* 優化：在淺色模式疊加一層 85% 透明度的白紗，確保文字與背景對比度足夠 */
-            --bg-hero: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('背景.jpg');
+            
+            /* 【優化】完全保留背景圖原本的絢麗深色，不被白紗濾鏡干擾 */
+            --bg-hero: url('背景.jpg');
+            
             --bg-section2: #ffffff;
             --bg-card: rgba(255, 255, 255, 0.9);
             --bg-nav: rgba(250, 250, 250, 0.85);
@@ -51,9 +53,9 @@
             --theme-pulse-to2: #0550ae;
             --card-border: #d0d7de;
             
-            /* 淺色模式鼠標：藍色微光 */
-            --cursor-glow-color: rgba(9, 105, 218, 0.25);
-            --cursor-glow-hover: rgba(9, 105, 218, 0.45);
+            /* 【優化】淺色模式滑鼠微光：改用 normal 混合模式，確保在深色背景圖與白色特色區皆能完美顯示藍色光暈 */
+            --cursor-glow-color: rgba(9, 105, 218, 0.35);
+            --cursor-glow-hover: rgba(9, 105, 218, 0.55);
             --cursor-blend: normal;
         }
 
@@ -243,6 +245,29 @@
             }
         }
 
+        /* 【修正】確保淺色模式下，在大圖背景上的大標題依然擁有高對比度及亮眼霓虹特效 */
+        [data-theme="light"] h1 {
+            color: #92c5ff; /* 亮藍色，在原本深色背景上極清晰 */
+            text-shadow: 
+                0 0 5px #92c5ff,
+                0 0 10px #0969da,
+                0 0 20px #218bff;
+        }
+
+        [data-theme="light"] h1.active {
+            animation: neonPulseLight 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonPulseLight {
+            to {
+                text-shadow: 
+                    0 0 10px #92c5ff, 
+                    0 0 25px #0969da, 
+                    0 0 45px #218bff, 
+                    0 0 60px #0550ae;
+            }
+        }
+
         /* 第二幕 */
         .second-section {
             min-height: 100vh;
@@ -266,6 +291,12 @@
             margin-bottom: 50px;
             letter-spacing: 4px;
             text-shadow: 0 0 15px rgba(255, 234, 0, 0.2);
+        }
+
+        /* 【修正】淺色模式下第三幕標題（位於深色背景圖上）的可讀性優化 */
+        [data-theme="light"] .third-section h2 {
+            color: #92c5ff;
+            text-shadow: 0 0 15px rgba(9, 105, 218, 0.6), 0 0 5px rgba(255, 255, 255, 0.3);
         }
 
         .feature-list {
