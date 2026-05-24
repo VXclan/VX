@@ -24,6 +24,7 @@
             --card-border-hover: #ffea00;
             --cursor-glow-color: rgba(255, 234, 0, 0.15);
             --cursor-glow-hover: rgba(0, 173, 181, 0.5);
+            --cursor-blend: screen;
         }
 
         [data-theme="light"] {
@@ -40,6 +41,7 @@
             /* 調整淺色模式下的藍色滑鼠微光顏色，使其在白底上更明顯 */
             --cursor-glow-color: rgba(9, 105, 218, 0.25);
             --cursor-glow-hover: rgba(9, 105, 218, 0.5);
+            --cursor-blend: normal;
         }
 
         * { 
@@ -56,12 +58,11 @@
             color: var(--text-main); 
             min-height: 100vh; 
             overflow-x: hidden; 
-            /* 移除固定的 padding-top，改由 sticky 導覽列自然推開 */
         }
 
         /* --- 頂部導覽列 (Navigation Bar) --- */
         .top-nav {
-            position: sticky; /* 改為 sticky 磁吸，自動佔用高度防止與內容重疊 */
+            position: sticky; /* Sticky 磁吸，自動佔用高度防止與內容重疊 */
             top: 0;
             left: 0;
             width: 100%;
@@ -76,6 +77,9 @@
             padding: 0 40px;
             z-index: 9990;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            /* 【效能優化】啟用 GPU 硬體加速，防止毛玻璃與捲動衝突卡頓 */
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         .nav-logo {
@@ -86,10 +90,28 @@
             padding: 5px 0;
         }
 
-        .nav-logo img {
+        /* --- Logo 顯示切換控制 (純 CSS 預載入方案) --- */
+        .nav-logo .logo-dark {
+            display: block; /* 預設深色模式顯示 */
             height: 45px;
             width: auto;
             object-fit: contain;
+        }
+
+        .nav-logo .logo-light {
+            display: none;  /* 預設深色模式隱藏 */
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* 淺色模式下的 Logo 切換 */
+        [data-theme="light"] .nav-logo .logo-dark {
+            display: none;
+        }
+
+        [data-theme="light"] .nav-logo .logo-light {
+            display: block;
         }
 
         .nav-menu {
@@ -161,6 +183,7 @@
             z-index: 9999; 
             transform: translate(-50%, -50%); 
             transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: var(--cursor-blend);
             display: none;
         }
 
@@ -174,7 +197,8 @@
         .social-card {
             background: var(--bg-card);
             border: 1px solid var(--card-border);
-            transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            /* 修正：移除了過渡動畫中的 transform，由 JS 動態切換以防止「膠水黏手感」 */
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
             transform-style: preserve-3d;
         }
 
@@ -205,13 +229,18 @@
                 justify-content: center;
                 gap: 12px;
             }
-            /* 移除手機版 body padding-top 的寫死設定，sticky 會自動完美適配 */
             .nav-menu {
                 gap: 15px;
                 width: 100%;
-                justify-content: center;
+                justify-content: flex-start; 
                 overflow-x: auto;
                 padding-bottom: 5px;
+                white-space: nowrap; 
+                -webkit-overflow-scrolling: touch;
+            }
+            /* 隱藏滾動條使視覺更加乾淨 */
+            .nav-menu::-webkit-scrollbar {
+                display: none; 
             }
             .nav-link {
                 padding: 6px 12px;
@@ -228,9 +257,10 @@
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
-        <!-- 戰隊 LOGO -->
+        <!-- 戰隊 LOGO (雙 Logo 結構) -->
         <a href="index.html" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
-            <img src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
+            <img src="logo.png" alt="VX CLAN" class="logo-dark">
+            <img src="顛倒logo.png" alt="VX CLAN" class="logo-light">
         </a>
         
         <!-- 選單項目 -->
@@ -340,7 +370,7 @@
             }
 
             // ==========================================
-            // 3. 3D 卡片傾斜效果
+            // 3. 3D 卡片傾斜效果 (優化平滑還原)
             // ==========================================
             if (!isTouchDevice) {
                 document.querySelectorAll('.social-card').forEach(card => {
@@ -348,9 +378,14 @@
                         const rect = card.getBoundingClientRect();
                         const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
                         const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+                        
+                        // 【優化】動態移動時移除 transform transition，讓傾斜極致絲滑、零阻力
+                        card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
                     });
                     card.addEventListener('mouseleave', () => {
+                        // 【優化】移開時加回過渡，使卡片優雅回彈
+                        card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });
                 });

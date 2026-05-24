@@ -14,7 +14,7 @@
             /* 深色主題變數 (VX 戰隊經典霓虹黃與青色微光) */
             --bg-main: #0b0b0d;
             --bg-gradient: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #05050a 100%);
-            --bg-hero: url('背景.jpg');
+            --bg-hero: url('背景.jpg'); /* 深色模式背景 */
             --bg-section2: #121216;
             --bg-card: rgba(18, 18, 22, 0.85);
             --bg-nav: rgba(11, 11, 13, 0.8);
@@ -37,9 +37,7 @@
             /* 淺色主題變數 (GitHub 經典灰白藍風格) */
             --bg-main: #fafafa;
             --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
-            
-            /* 【優化】完全保留背景圖原本的絢麗深色，不被白紗濾鏡干擾 */
-            --bg-hero: url('背景.jpg');
+            --bg-hero: url('顛倒背景.png'); /* 【已修正】淺色模式背景切換為顛倒背景 */
             
             --bg-section2: #ffffff;
             --bg-card: rgba(255, 255, 255, 0.9);
@@ -53,7 +51,7 @@
             --theme-pulse-to2: #0550ae;
             --card-border: #d0d7de;
             
-            /* 【優化】淺色模式滑鼠微光：改用 normal 混合模式，確保在深色背景圖與白色特色區皆能完美顯示藍色光暈 */
+            /* 淺色模式滑鼠微光 */
             --cursor-glow-color: rgba(9, 105, 218, 0.35);
             --cursor-glow-hover: rgba(9, 105, 218, 0.55);
             --cursor-blend: normal;
@@ -95,6 +93,9 @@
             padding: 0 40px;
             z-index: 9990;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            /* 【效能優化】防止滑動時毛玻璃造成畫面閃爍 */
+            will-change: transform;
+            transform: translateZ(0); 
         }
 
         .nav-logo {
@@ -105,10 +106,28 @@
             padding: 5px 0;
         }
 
-        .nav-logo img {
+        /* --- Logo 顯示切換控制 (解決閃爍問題) --- */
+        .nav-logo .logo-dark {
+            display: block; /* 預設深色模式顯示 */
             height: 45px;
             width: auto;
             object-fit: contain;
+        }
+
+        .nav-logo .logo-light {
+            display: none;  /* 預設深色模式隱藏 */
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* 淺色模式下的 Logo 切換 */
+        [data-theme="light"] .nav-logo .logo-dark {
+            display: none;
+        }
+
+        [data-theme="light"] .nav-logo .logo-light {
+            display: block;
         }
 
         .nav-menu {
@@ -176,7 +195,7 @@
             pointer-events: none;
             z-index: 9999;
             transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background 0.3s;
+            transition: width 0.3s, height 0.3s, background 0.3s, opacity 0.3s ease; /* 增加不透明度過渡 */
             mix-blend-mode: var(--cursor-blend);
             display: none;
         }
@@ -222,10 +241,7 @@
             color: var(--theme-yellow);
             letter-spacing: 8px;
             text-transform: uppercase;
-            
-            /* 再次微幅往下推移：由 180px 增加至 240px */
             margin-top: 240px;
-            
             text-shadow: 
                 0 0 5px var(--theme-yellow),
                 0 0 10px var(--theme-yellow),
@@ -249,9 +265,8 @@
             }
         }
 
-        /* 【修正】確保淺色模式下，在大圖背景上的大標題依然擁有高對比度及亮眼霓虹特效 */
         [data-theme="light"] h1 {
-            color: #92c5ff; /* 亮藍色，在原本深色背景上極清晰 */
+            color: #92c5ff;
             text-shadow: 
                 0 0 5px #92c5ff,
                 0 0 10px #0969da,
@@ -297,7 +312,6 @@
             text-shadow: 0 0 15px rgba(255, 234, 0, 0.2);
         }
 
-        /* 【修正】淺色模式下第三幕標題（位於深色背景圖上）的可讀性優化 */
         [data-theme="light"] .third-section h2 {
             color: #92c5ff;
             text-shadow: 0 0 15px rgba(9, 105, 218, 0.6), 0 0 5px rgba(255, 255, 255, 0.3);
@@ -409,8 +423,6 @@
             transform-style: preserve-3d;
             border: 1px solid var(--card-border);
             will-change: transform, box-shadow;
-            
-            /* 優化：防止在進行 3D 傾斜旋轉時，內文字體邊緣模糊、抖動 */
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
         }
@@ -440,7 +452,6 @@
         .card-line .action-btn { background-color: #06c755; color: #ffffff; }
         .card-line:hover .action-btn { background-color: #05a044; transform: translateZ(40px) scale(1.05); }
 
-        /* 頁尾區塊 */
         .main-footer {
             background-color: #050507;
             padding: 30px 20px;
@@ -486,9 +497,10 @@
                 font-size: 0.8rem;
             }
             h1 {
-                font-size: 3rem;
-                /* 手機版也同步再調低一點，由原來的 80px 增加至 110px */
-                margin-top: 110px;
+                /* 【優化】防止寬度不夠時英文字或中文字被擠壓斷行 */
+                font-size: 2.5rem;   
+                letter-spacing: 4px; 
+                margin-top: 120px;
             }
         }
     </style>
@@ -497,16 +509,20 @@
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
-        <!-- 戰隊 LOGO -->
-        <a href="index.html" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
-            <img src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
+        <!-- 【優化】雙 Logo 結構，解決淺色模式下重新整理/切換時的載入空白問題 -->
+        <a href="#home" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
+            <img src="logo.png" alt="VX CLAN" class="logo-dark">
+            <img src="顛倒logo.png" alt="VX CLAN" class="logo-light">
         </a>
         
+        <!-- 【修復】將外部頁面改為頁內錨點，使 Scrollspy 運作正常 -->
         <ul class="nav-menu">
-            <li><a href="index.html" class="nav-link active">首頁</a></li>
+            <li><a href="#home" class="nav-link active">首頁</a></li>
+            <li><a href="#features" class="nav-link">戰隊特色</a></li>
+            <li><a href="#community" class="nav-link">戰隊社群</a></li>
+            <!-- 以下為獨立分頁 -->
             <li><a href="成員名單.html" class="nav-link">成員名單</a></li>
             <li><a href="團戰.html" class="nav-link">團戰賽程</a></li>
-            <li><a href="合作.html" class="nav-link">合作夥伴</a></li>
         </ul>
         
         <div class="nav-actions">
@@ -535,8 +551,9 @@
                 <div class="feature-item reveal fade-left" style="transition-delay: 0.3s;">經常打團戰，和別的戰隊切磋</div>
             </div>
 
+            <!-- 【相容性優化】為防止部分 Android/Windows 豆腐字，將文字調整為乾淨的可讀字，並可用 CSS 進一步美化 -->
             <div class="alliance-card reveal scale-up" style="transition-delay: 0.2s;">
-                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓲𝓽𝓮δ 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
+                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽𝓮𝓭 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓷𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
             </div>
         </div>
     </section>
@@ -654,7 +671,6 @@
 
             window.addEventListener('scroll', () => {
                 let currentSectionId = '';
-                // 考量到頂部導覽列高 70px，抓取當前滾動位置
                 const scrollPosition = window.scrollY + 100; 
 
                 sections.forEach(section => {
@@ -687,6 +703,14 @@
                         cursorGlow.style.left = `${e.clientX}px`;
                         cursorGlow.style.top = `${e.clientY}px`;
                     });
+                });
+
+                // 【修正：滑鼠滑出視窗微光不要殘留】
+                document.addEventListener('mouseleave', () => {
+                    cursorGlow.style.opacity = '0';
+                });
+                document.addEventListener('mouseenter', () => {
+                    cursorGlow.style.opacity = '1';
                 });
 
                 const updateInteractiveListeners = () => {
@@ -732,11 +756,13 @@
                         const rotateX = ((yc - y) / yc) * 15;
                         const rotateY = ((x - xc) / xc) * 15;
                         
-                        card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
+                        // 滑動時抽離 transform 的過渡，解決滑鼠跟隨的遲鈍、橡皮筋感
+                        card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
                     });
                     
                     card.addEventListener('mouseleave', () => {
+                        // 移開時恢復平滑過渡
                         card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });

@@ -95,6 +95,9 @@
             padding: 0 40px;
             z-index: 9990;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            /* 【效能優化】防止毛玻璃在部分裝置上造成畫面閃爍與卡頓 */
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         .nav-logo {
@@ -105,10 +108,28 @@
             padding: 5px 0;
         }
 
-        .nav-logo img {
+        /* --- Logo 顯示切換控制 (純 CSS 預載入方案) --- */
+        .nav-logo .logo-dark {
+            display: block; /* 預設深色模式顯示 */
             height: 45px;
             width: auto;
             object-fit: contain;
+        }
+
+        .nav-logo .logo-light {
+            display: none;  /* 預設深色模式隱藏 */
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* 淺色模式下的 Logo 切換 */
+        [data-theme="light"] .nav-logo .logo-dark {
+            display: none;
+        }
+
+        [data-theme="light"] .nav-logo .logo-light {
+            display: block;
         }
 
         .nav-menu {
@@ -221,12 +242,14 @@
             width: 380px;
             text-decoration: none;
             color: var(--text-main);
-            /* 修正：過渡動畫在離開時由 JS 動態設定 0.5s 平滑回彈 */
-            transition: transform 0.1s ease-out, box-shadow 0.3s, border-color 0.3s;
+            /* 修正：移除了 transition 中的 transform 動畫，由 JS 動態接管使其極致流暢 */
+            transition: box-shadow 0.3s, border-color 0.3s;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             text-align: center;
             cursor: pointer;
             transform-style: preserve-3d;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
         .partner-card p {
@@ -319,9 +342,10 @@
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
-        <!-- 戰隊 LOGO -->
+        <!-- 戰隊 LOGO (雙 Logo 結構) -->
         <a href="index.html" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
-            <img src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
+            <img src="logo.png" alt="VX CLAN" class="logo-dark">
+            <img src="顛倒logo.png" alt="VX CLAN" class="logo-light">
         </a>
         
         <!-- 選單項目 -->
@@ -350,7 +374,7 @@
     <div class="partner-grid">
         <!-- 合作對象 1 -->
         <a href="https://discord.gg/5gcSAqvMRm" target="_blank" class="partner-card">
-            <span class="partner-name">𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽𝓮𝓭 𝓣eam 𝓒ouncil [𝓡.𝓤.𝓣.𝓒]</span>
+            <span class="partner-name">𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽𝓮𝓭 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓷𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</span>
             <p>專業團隊，強強聯手</p>
             <div class="btn">加入 Discord</div>
         </a>
@@ -421,7 +445,7 @@
             }
 
             // ==========================================
-            // 3. 3D 卡片傾斜互動 (優化平滑回彈)
+            // 3. 3D 卡片傾斜互動 (優化平滑回彈與即時跟隨)
             // ==========================================
             const cards = document.querySelectorAll('.partner-card');
             if (!isTouchDevice) {
@@ -436,13 +460,13 @@
                         const rotateX = ((yc - y) / yc) * 15;
                         const rotateY = ((x - xc) / xc) * 15;
                         
-                        // 移動時即時反應
-                        card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
+                        // 【優化】移動時將 transform 漸變過渡拿掉，達到極致靈敏、不拖泥帶水的 3D 效果
+                        card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
                     });
                     
                     card.addEventListener('mouseleave', () => {
-                        // 修正：滑鼠離開卡片時給予 0.5s 的緩動，讓卡片平滑回彈，不再有生硬跳躍感
+                        // 滑鼠離開卡片時給予 0.5s 的緩動，讓卡片平滑回彈，不再有生硬跳躍感
                         card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });

@@ -73,12 +73,11 @@
             color: var(--text-main); 
             min-height: 100vh; 
             overflow-x: hidden; 
-            /* 移除固定 padding-top，由 sticky 導覽列自然推開內容 */
         }
 
         /* --- 頂部導覽列 (Navigation Bar) --- */
         .top-nav {
-            position: sticky; /* 改為 sticky 磁吸定位，自動撐開高度不重疊 */
+            position: sticky; 
             top: 0;
             left: 0;
             width: 100%;
@@ -93,6 +92,9 @@
             padding: 0 40px;
             z-index: 9990;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            /* 【效能優化】啟用 GPU 硬體加速，防止滾動與毛玻璃特效衝突造成卡頓 */
+            will-change: transform;
+            transform: translateZ(0);
         }
 
         .nav-logo {
@@ -103,10 +105,28 @@
             padding: 5px 0;
         }
 
-        .nav-logo img {
+        /* --- Logo 顯示切換控制 (純 CSS 預載入方案) --- */
+        .nav-logo .logo-dark {
+            display: block; /* 預設深色模式顯示 */
             height: 45px;
             width: auto;
             object-fit: contain;
+        }
+
+        .nav-logo .logo-light {
+            display: none;  /* 預設深色模式隱藏 */
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        /* 淺色模式下的 Logo 切換 */
+        [data-theme="light"] .nav-logo .logo-dark {
+            display: none;
+        }
+
+        [data-theme="light"] .nav-logo .logo-light {
+            display: block;
         }
 
         .nav-menu {
@@ -192,7 +212,8 @@
         .social-card {
             background: var(--bg-card);
             border: 1px solid var(--card-border);
-            transition: transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
+            /* 修正：過渡動畫在移入與移出時動態控制，移入時 transform 拿掉過渡，避免「黏滑手」 */
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
             transform-style: preserve-3d;
         }
 
@@ -246,7 +267,6 @@
                 justify-content: center;
                 gap: 12px;
             }
-            /* 移除手機版 body 寫死的 padding-top，由 sticky 完美適配 */
             .nav-menu {
                 gap: 15px;
                 width: 100%;
@@ -274,9 +294,10 @@
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
-        <!-- 戰隊 LOGO -->
+        <!-- 戰隊 LOGO (雙 Logo 結構) -->
         <a href="index.html" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
-            <img src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
+            <img src="logo.png" alt="VX CLAN" class="logo-dark">
+            <img src="顛倒logo.png" alt="VX CLAN" class="logo-light">
         </a>
         
         <!-- 選單項目 -->
@@ -298,7 +319,7 @@
     <!-- 粒子微光滑鼠隨動特效容器 -->
     <div class="cursor-glow"></div>
 
-    <!-- 內容區域（移除 body p-8 改由容器自帶 px-4 px-8 進行外距防爆） -->
+    <!-- 內容區域 -->
     <header class="max-w-4xl mx-auto text-center py-16 px-4 md:px-8">
         <h1 class="text-5xl font-bold mb-4 tracking-tighter">VX CLAN <span class="card-title-theme">ROSTER</span></h1>
         <p class="text-gray-500 mb-8">總人數：34 人</p>
@@ -453,7 +474,7 @@
             }
 
             // ==========================================
-            // 3. 3D 卡片傾斜效果 (優化平滑還原)
+            // 3. 3D 卡片傾斜效果 (優化流暢跟隨與平滑還原)
             // ==========================================
             if (!isTouchDevice) {
                 document.querySelectorAll('.social-card').forEach(card => {
@@ -462,13 +483,13 @@
                         const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
                         const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
                         
-                        // 確保滑動時即時響應
-                        card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
+                        // 【優化】移除移動時的 transform transition，使其反應極致即時、不黏手
+                        card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
                     });
                     
                     card.addEventListener('mouseleave', () => {
-                        // 離開卡片時給予 0.5s 緩動平滑回彈
+                        // 【優化】離開卡片時加回過渡，讓 3D 傾斜平滑復原
                         card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });
