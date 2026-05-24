@@ -14,7 +14,7 @@
             /* 深色主題變數 (VX 戰隊經典霓虹黃與青色微光) */
             --bg-main: #0b0b0d;
             --bg-gradient: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #05050a 100%);
-            --bg-hero: url('背景.jpg'); /* 深色模式背景 */
+            --bg-hero: url('背景.jpg'); /* 深色模式背景圖 */
             --bg-section2: #121216;
             --bg-card: rgba(18, 18, 22, 0.85);
             --bg-nav: rgba(11, 11, 13, 0.8);
@@ -31,14 +31,17 @@
             --cursor-glow-color: rgba(255, 234, 0, 0.4);
             --cursor-glow-hover: rgba(0, 173, 181, 0.5);
             --cursor-blend: screen;
+
+            /* 卡片內部文字專用顏色（確保在深色大圖背景下不受主題切換影響） */
+            --card-text-main: #ffffff;
+            --card-text-muted: #a8a8b3;
         }
 
         [data-theme="light"] {
             /* 淺色主題變數 (GitHub 經典灰白藍風格) */
             --bg-main: #fafafa;
             --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
-            --bg-hero: url('顛倒背景.png'); /* 【已修正】淺色模式背景切換為顛倒背景 */
-            
+            --bg-hero: url('顛倒背景.png'); /* 👈 淺色模式背景圖自動更換為顛倒背景 */
             --bg-section2: #ffffff;
             --bg-card: rgba(255, 255, 255, 0.9);
             --bg-nav: rgba(250, 250, 250, 0.85);
@@ -55,6 +58,10 @@
             --cursor-glow-color: rgba(9, 105, 218, 0.35);
             --cursor-glow-hover: rgba(9, 105, 218, 0.55);
             --cursor-blend: normal;
+
+            /* 淺色模式下的卡片文字顏色 */
+            --card-text-main: #24292f;
+            --card-text-muted: #57606a;
         }
 
         * {
@@ -93,9 +100,6 @@
             padding: 0 40px;
             z-index: 9990;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            /* 【效能優化】防止滑動時毛玻璃造成畫面閃爍 */
-            will-change: transform;
-            transform: translateZ(0); 
         }
 
         .nav-logo {
@@ -106,28 +110,10 @@
             padding: 5px 0;
         }
 
-        /* --- Logo 顯示切換控制 (解決閃爍問題) --- */
-        .nav-logo .logo-dark {
-            display: block; /* 預設深色模式顯示 */
+        .nav-logo img {
             height: 45px;
             width: auto;
             object-fit: contain;
-        }
-
-        .nav-logo .logo-light {
-            display: none;  /* 預設深色模式隱藏 */
-            height: 45px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        /* 淺色模式下的 Logo 切換 */
-        [data-theme="light"] .nav-logo .logo-dark {
-            display: none;
-        }
-
-        [data-theme="light"] .nav-logo .logo-light {
-            display: block;
         }
 
         .nav-menu {
@@ -195,7 +181,7 @@
             pointer-events: none;
             z-index: 9999;
             transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background 0.3s, opacity 0.3s ease; /* 增加不透明度過渡 */
+            transition: width 0.3s, height 0.3s, background 0.3s;
             mix-blend-mode: var(--cursor-blend);
             display: none;
         }
@@ -413,7 +399,6 @@
             padding: 50px 30px;
             width: 340px;
             text-decoration: none;
-            color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -421,13 +406,30 @@
             transition: transform 0.1s ease-out, box-shadow 0.3s, border-color 0.3s;
             position: relative;
             transform-style: preserve-3d;
+            transform: translateZ(0); /* 強制啟動 GPU 硬體加速 */
             border: 1px solid var(--card-border);
             will-change: transform, box-shadow;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
         }
 
-        .social-card .icon-wrapper, h3, p, .action-btn {
+        .social-card h3 { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            margin-bottom: 12px; 
+            letter-spacing: 1px; 
+            color: var(--card-text-main); 
+        }
+
+        .social-card p { 
+            font-size: 1rem; 
+            color: var(--card-text-muted); 
+            margin-bottom: 35px; 
+            line-height: 1.6; 
+            flex-grow: 1; 
+        }
+
+        .social-card .icon-wrapper, .social-card h3, .social-card p, .social-card .action-btn {
             transform: translateZ(30px);
             transition: transform 0.3s ease;
         }
@@ -443,15 +445,13 @@
         .card-discord .icon-wrapper svg { filter: drop-shadow(0 0 10px rgba(88, 101, 242, 0.6)); }
         .card-line .icon-wrapper svg { filter: drop-shadow(0 0 10px rgba(6, 199, 85, 0.6)); }
 
-        .social-card h3 { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; color: var(--text-main); }
-        .social-card p { font-size: 1rem; color: var(--text-muted); margin-bottom: 35px; line-height: 1.6; flex-grow: 1; }
-
         .action-btn { width: 100%; padding: 12px 0; border-radius: 50px; font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; transition: transform 0.3s, background-color 0.3s; }
         .card-discord .action-btn { background-color: #5865f2; color: #ffffff; }
         .card-discord:hover .action-btn { background-color: #4752c4; transform: translateZ(40px) scale(1.05); }
         .card-line .action-btn { background-color: #06c755; color: #ffffff; }
         .card-line:hover .action-btn { background-color: #05a044; transform: translateZ(40px) scale(1.05); }
 
+        /* 頁尾區塊 */
         .main-footer {
             background-color: #050507;
             padding: 30px 20px;
@@ -479,7 +479,7 @@
             .nav-menu {
                 gap: 15px;
                 width: 100%;
-                justify-content: flex-start;
+                justify-content: center;
                 overflow-x: auto;
                 padding-bottom: 5px;
                 white-space: nowrap;
@@ -497,10 +497,8 @@
                 font-size: 0.8rem;
             }
             h1 {
-                /* 【優化】防止寬度不夠時英文字或中文字被擠壓斷行 */
-                font-size: 2.5rem;   
-                letter-spacing: 4px; 
-                margin-top: 120px;
+                font-size: 3rem;
+                margin-top: 110px;
             }
         }
     </style>
@@ -509,20 +507,16 @@
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
-        <!-- 【優化】雙 Logo 結構，解決淺色模式下重新整理/切換時的載入空白問題 -->
+        <!-- 戰隊 LOGO (加上 id 方便 JavaScript 進行深淺色替換) -->
         <a href="#home" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
-            <img src="logo.png" alt="VX CLAN" class="logo-dark">
-            <img src="顛倒logo.png" alt="VX CLAN" class="logo-light">
+            <img id="navLogoImg" src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
         </a>
         
-        <!-- 【修復】將外部頁面改為頁內錨點，使 Scrollspy 運作正常 -->
         <ul class="nav-menu">
             <li><a href="#home" class="nav-link active">首頁</a></li>
-            <li><a href="#features" class="nav-link">戰隊特色</a></li>
-            <li><a href="#community" class="nav-link">戰隊社群</a></li>
-            <!-- 以下為獨立分頁 -->
             <li><a href="成員名單.html" class="nav-link">成員名單</a></li>
             <li><a href="團戰.html" class="nav-link">團戰賽程</a></li>
+            <li><a href="合作.html" class="nav-link">合作夥伴</a></li>
         </ul>
         
         <div class="nav-actions">
@@ -551,9 +545,8 @@
                 <div class="feature-item reveal fade-left" style="transition-delay: 0.3s;">經常打團戰，和別的戰隊切磋</div>
             </div>
 
-            <!-- 【相容性優化】為防止部分 Android/Windows 豆腐字，將文字調整為乾淨的可讀字，並可用 CSS 進一步美化 -->
             <div class="alliance-card reveal scale-up" style="transition-delay: 0.2s;">
-                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓷𝓲𝓽𝓮𝓭 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓷𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
+                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓲𝓽𝓮δ 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
             </div>
         </div>
     </section>
@@ -596,16 +589,20 @@
         <p>© 2026 VX CLAN. All rights reserved. 本網站僅供戰隊交流推廣使用。</p>
     </footer>
 
-    <!-- 交互與動畫控制腳本 -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // ==========================================
-            // 1. 深淺主題切換邏輯
+            // 1. 深淺主題切換邏輯 (支援動態 logo 替換與預載)
             // ==========================================
             const themeToggleBtn = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
             const themeText = document.getElementById('themeText');
+            const navLogoImg = document.getElementById('navLogoImg');
             
+            // 預載淺色模式專用圖片，消除下載延遲產生的閃爍白畫面
+            const preloadLogo = new Image(); preloadLogo.src = '顛倒logo.png';
+            const preloadBg = new Image(); preloadBg.src = '顛倒背景.png';
+
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeUI(savedTheme);
@@ -623,9 +620,11 @@
                 if (theme === 'dark') {
                     themeIcon.textContent = '🌙';
                     themeText.textContent = '深色模式';
+                    if (navLogoImg) navLogoImg.src = 'logo.png'; // 👈 深色模式下用原本 logo
                 } else {
                     themeIcon.textContent = '☀️';
                     themeText.textContent = '淺色模式';
+                    if (navLogoImg) navLogoImg.src = '顛倒logo.png'; // 👈 淺色模式下自動切換成顛倒 logo
                 }
             }
 
@@ -664,7 +663,7 @@
             });
 
             // ==========================================
-            // 3.5 導覽列 Scrollspy (滾動自動高亮對應選單)
+            // 3.5 導覽列 Scrollspy (滾動自動高亮對應選單 - 已過濾非錨點項目)
             // ==========================================
             const sections = document.querySelectorAll('section');
             const navLinks = document.querySelectorAll('.nav-link');
@@ -682,9 +681,12 @@
                 });
 
                 navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${currentSectionId}`) {
-                        link.classList.add('active');
+                    const href = link.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        link.classList.remove('active');
+                        if (href === `#${currentSectionId}`) {
+                            link.classList.add('active');
+                        }
                     }
                 });
             });
@@ -703,14 +705,6 @@
                         cursorGlow.style.left = `${e.clientX}px`;
                         cursorGlow.style.top = `${e.clientY}px`;
                     });
-                });
-
-                // 【修正：滑鼠滑出視窗微光不要殘留】
-                document.addEventListener('mouseleave', () => {
-                    cursorGlow.style.opacity = '0';
-                });
-                document.addEventListener('mouseenter', () => {
-                    cursorGlow.style.opacity = '1';
                 });
 
                 const updateInteractiveListeners = () => {
@@ -756,13 +750,11 @@
                         const rotateX = ((yc - y) / yc) * 15;
                         const rotateY = ((x - xc) / xc) * 15;
                         
-                        // 滑動時抽離 transform 的過渡，解決滑鼠跟隨的遲鈍、橡皮筋感
-                        card.style.transition = 'box-shadow 0.3s, border-color 0.3s';
+                        card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
                     });
                     
                     card.addEventListener('mouseleave', () => {
-                        // 移開時恢復平滑過渡
                         card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
                         card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0px)';
                     });
