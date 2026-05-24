@@ -32,7 +32,7 @@
             --cursor-glow-hover: rgba(0, 173, 181, 0.5);
             --cursor-blend: screen;
 
-            /* 卡片內部文字專用顏色（確保在深色大圖背景下不受主題切換影響） */
+            /* 卡片內部文字專用顏色 */
             --card-text-main: #ffffff;
             --card-text-muted: #a8a8b3;
         }
@@ -41,7 +41,7 @@
             /* 淺色主題變數 (GitHub 經典灰白藍風格) */
             --bg-main: #fafafa;
             --bg-gradient: radial-gradient(circle at 50% 50%, #f0f2f5 0%, #e4e7eb 100%);
-            --bg-hero: url('顛倒背景.png'); /* 👈 淺色模式背景圖自動更換為顛倒背景 */
+            --bg-hero: url('顛倒背景.png'); /* 淺色模式背景圖 */
             --bg-section2: #ffffff;
             --bg-card: rgba(255, 255, 255, 0.9);
             --bg-nav: rgba(250, 250, 250, 0.85);
@@ -134,9 +134,12 @@
             transition: all 0.3s ease;
         }
 
-        .nav-link:hover {
-            color: var(--theme-yellow);
-            background: rgba(255, 255, 255, 0.05);
+        /* 僅在支援 hover 的裝置套用懸停背景，防止行動端點擊殘留 */
+        @media (hover: hover) {
+            .nav-link:hover {
+                color: var(--theme-yellow);
+                background: rgba(255, 255, 255, 0.05);
+            }
         }
 
         .nav-link.active {
@@ -163,10 +166,12 @@
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
         }
 
-        .theme-toggle-btn:hover {
-            transform: scale(1.05);
-            border-color: var(--theme-yellow);
-            box-shadow: 0 4px 20px var(--cursor-glow-hover);
+        @media (hover: hover) {
+            .theme-toggle-btn:hover {
+                transform: scale(1.05);
+                border-color: var(--theme-yellow);
+                box-shadow: 0 4px 20px var(--cursor-glow-hover);
+            }
         }
 
         /* --- 互動滑鼠微光 --- */
@@ -345,12 +350,18 @@
             mix-blend-mode: var(--cursor-blend);
         }
 
-        .feature-item:hover::before { opacity: 1; }
-
-        .feature-item:hover {
-            transform: translateX(10px);
-            box-shadow: 0 5px 25px var(--cursor-glow-color);
-            background: var(--bg-feature-hover);
+        /* 防止手機觸控後 Hover 樣式殘留位移 */
+        @media (hover: hover) {
+            .feature-item:hover::before { opacity: 1; }
+            .feature-item:hover {
+                transform: translateX(10px);
+                box-shadow: 0 5px 25px var(--cursor-glow-color);
+                background: var(--bg-feature-hover);
+            }
+            .alliance-card:hover {
+                box-shadow: 0 0 30px var(--cursor-glow-color);
+                transform: scale(1.02);
+            }
         }
 
         .alliance-card {
@@ -360,11 +371,6 @@
             border: 2px dashed var(--theme-yellow);
             box-shadow: 0 0 20px rgba(255, 234, 0, 0.05);
             transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
-        }
-
-        .alliance-card:hover {
-            box-shadow: 0 0 30px var(--cursor-glow-color);
-            transform: scale(1.02);
         }
 
         .alliance-name {
@@ -555,7 +561,7 @@
             </div>
 
             <div class="alliance-card reveal scale-up" style="transition-delay: 0.2s;">
-                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓲𝓽𝓮δ 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
+                <div class="alliance-name">已加入 Rivals United Team Council [R.U.T.C]</div>
             </div>
         </div>
     </section>
@@ -671,23 +677,26 @@
             });
 
             // ==========================================
-            // 3.5 導覽列作用中狀態 (同時支援單頁滾動與多頁導覽)
+            // 3.5 導覽列作用中狀態 (精確解析檔名，不受上層中文字資料夾干擾)
             // ==========================================
             const navLinks = document.querySelectorAll('.nav-link');
-            const currentPath = window.location.pathname;
 
             function updateNavActiveState() {
-                // 1. 偵測目前是不是在首頁 ( index.html 或是 '/' )
-                const isHomePage = currentPath === '/' || 
-                                   currentPath.endsWith('index.html') || 
-                                   currentPath === '' || 
-                                   (!currentPath.includes('成員') && !currentPath.includes('團戰') && !currentPath.includes('合作'));
+                // 解碼當前 URL 的 pathname，並只切出「最尾端的檔案名稱」
+                const decodedPath = decodeURIComponent(window.location.pathname);
+                const pathParts = decodedPath.split('/');
+                const currentFile = pathParts[pathParts.length - 1] || 'index.html';
 
-                // 先移除所有項目的 active 狀態
+                // 判斷是否為首頁主體 (index.html, 根路徑 /, 或非其他特定分頁)
+                const isHomePage = currentFile === 'index.html' || 
+                                   currentFile === 'index.htm' || 
+                                   currentFile === '' || 
+                                   (!currentFile.includes('成員名單') && !currentFile.includes('團戰') && !currentFile.includes('合作'));
+
                 navLinks.forEach(link => link.classList.remove('active'));
 
                 if (isHomePage) {
-                    // 如果在首頁，因為此頁面有所有 section 內容，我們直接讓「首頁」標籤維持 active
+                    // 首頁狀態下，讓「首頁」導覽鈕在「第一幕、第二幕、第三幕」滑動期間永遠維持高亮 active
                     const homeLink = Array.from(navLinks).find(link => {
                         const href = link.getAttribute('href');
                         return href === '#home' || href === 'index.html' || href === '/';
@@ -696,13 +705,12 @@
                         homeLink.classList.add('active');
                     }
                 } else {
-                    // 如果在其他分頁（例如成員名單.html、團戰.html、合作.html），比對網址亮起對應項目
+                    // 處於其他實際分頁（例如：成員名單.html）時，比對檔案名稱亮起對應項目
                     navLinks.forEach(link => {
                         const href = link.getAttribute('href');
                         if (href && !href.startsWith('#')) {
                             const linkPage = href.split('/').pop();
-                            const currentPage = currentPath.split('/').pop();
-                            if (currentPage && decodeURIComponent(currentPage) === decodeURIComponent(linkPage)) {
+                            if (currentFile === linkPage) {
                                 link.classList.add('active');
                             }
                         }
@@ -710,8 +718,8 @@
                 }
             }
 
-            // 綁定滾動偵測與初始化
-            window.addEventListener('scroll', updateNavActiveState);
+            // 滾動與頁面載入時皆執行狀態更新，使用 passive 提升行動端頁面效能
+            window.addEventListener('scroll', updateNavActiveState, { passive: true });
             updateNavActiveState();
 
             // ==========================================
@@ -776,6 +784,8 @@
                         card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s';
                         card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`;
                     });
+                    
+                    card.style.transformStyle = 'preserve-3d';
                     
                     card.addEventListener('mouseleave', () => {
                         card.style.transition = 'transform 0.5s ease, box-shadow 0.3s, border-color 0.3s';
