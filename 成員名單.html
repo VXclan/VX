@@ -240,12 +240,17 @@
             color: var(--role-tag-text); 
             font-weight: bold; 
             margin-left: 5px; 
+            display: inline-block;
+            vertical-align: middle;
         }
 
         .member-item { 
             padding: 8px 0; 
             border-bottom: 1px solid var(--border-member-item); 
             color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 讓名字和標籤左右貼合更美觀 */
         }
 
         /* 搜尋框框線主題化 */
@@ -255,6 +260,22 @@
         }
         #memberSearch:focus {
             border-bottom-color: var(--theme-yellow);
+        }
+
+        /* --- 自訂精美滾動條（客製化 Scrollbar） --- */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--card-border-hover);
+            border-radius: 10px;
+            opacity: 0.5;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: var(--theme-yellow);
         }
 
         /* --- 響應式微調 (平板 & 手機端優化) --- */
@@ -322,90 +343,113 @@
     <!-- 內容區域 -->
     <header class="max-w-4xl mx-auto text-center py-16 px-4 md:px-8">
         <h1 class="text-5xl font-bold mb-4 tracking-tighter">VX CLAN <span class="card-title-theme">ROSTER</span></h1>
-        <p class="text-gray-500 mb-8">總人數：34 人</p>
+        <p class="text-gray-500 mb-8 text-lg">總人數：33 人</p>
         <input type="text" id="memberSearch" placeholder="搜尋隊員名稱..." 
                class="bg-transparent border-b outline-none w-64 text-center py-2 text-lg transition-colors">
     </header>
+
+    <!-- 查無隊員提示資訊 -->
+    <div id="noResults" class="hidden text-center py-12">
+        <p class="text-xl text-gray-500 font-semibold mb-2">🔍 找不到符合條件的隊員</p>
+        <p class="text-sm text-gray-400">請嘗試輸入其他關鍵字（大小寫不限）。</p>
+    </div>
 
     <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16 px-4 md:px-8">
         
         <!-- 管理層 -->
         <div class="social-card p-6 rounded-2xl">
             <h3 class="text-lg font-bold mb-4 card-title-theme">戰隊管理層</h3>
-            <div class="member-item">@Vx4cE_Jimmy <span class="role-tag">團長</span></div>
-            <div class="member-item">@Konjac <span class="role-tag">副團長</span></div>
+            <div class="member-item"><span>@Vx4cE_Jimmy</span> <span class="role-tag">團長</span></div>
+            <div class="member-item"><span>@Konjac</span> <span class="role-tag">副團長</span></div>
         </div>
 
         <!-- VXN 小刀菁英 -->
         <div class="social-card p-6 rounded-2xl">
-            <h3 class="text-lg font-bold mb-4 card-title-normal">小刀菁英｜VXN</h3>
-            <div class="text-sm h-64 overflow-y-auto pr-1">
-                <div class="member-item">@KnR_Lin <span class="role-tag">團長</span></div>
-                <div class="member-item">@最菜荒野玩家 <span class="role-tag">副團/考官</span></div>
-                <div class="member-item">@TSB郭志麒 <span class="role-tag">考官</span></div>
-                <div class="member-item">@LVSS</div> <div class="member-item">@Konjac</div> <div class="member-item">@Yoyo109111</div>
-                <div class="member-item">@VXN_NCRVC</div> <div class="member-item">@Vx4cE_Jimmy</div> <div class="member-item">@iii123123111</div>
-                <div class="member-item">@你Daddy</div> <div class="member-item">@FRee sea</div> <div class="member-item">@𝕰𝕷 𝕬𝕷𝕰𝖃</div>
-                <div class="member-item">@JJKK50702</div> <div class="member-item">@蟑螂</div> <div class="member-item">@123456789</div>
-                <div class="member-item">@i am your dad</div> <div class="member-item">VXN_JASON</div> <div class="member-item">VXN_IQ180</div>
-                <div class="member-item">VXN_skpn7DK</div> <div class="member-item">00_10B</div> <div class="member-item">VXN_PhilipBall18469</div>
+            <h3 class="text-lg font-bold mb-4 card-title-normal">小刀菁英｜VXN <span class="text-xs text-gray-500 font-normal ml-2">20 人</span></h3>
+            <div class="text-sm h-72 overflow-y-auto pr-2 custom-scrollbar">
+                <div class="member-item"><span>@KnR_Lin</span> <span class="role-tag">團長</span></div>
+                <div class="member-item"><span>@蘑菇</span> <span class="role-tag">副團/考官</span></div>
+                <div class="member-item"><span>@TSB郭志麒</span> <span class="role-tag">考官</span></div>
+                <div class="member-item"><span>@LVSS</span></div> 
+                <div class="member-item"><span>@Konjac</span></div> 
+                <div class="member-item"><span>@Yoyo109111</span></div>
+                <div class="member-item"><span>@NC_2NICE</span></div> 
+                <div class="member-item"><span>@Vx4cE_Jimmy</span></div> 
+                <div class="member-item"><span>@iii123123111</span></div>
+                <div class="member-item"><span>@你Daddy</span></div> 
+                <div class="member-item"><span>@FRee sea</span></div> 
+                <div class="member-item"><span>@𝕰𝕷 𝕬𝕷𝕰𝖃</span></div>
+                <div class="member-item"><span>@蟑螂</span></div> 
+                <div class="member-item"><span>@123456789</span></div> 
+                <div class="member-item"><span>@i am your dad</span></div> 
+                <div class="member-item"><span>VXN_JASON</span></div> 
+                <div class="member-item"><span>VXN_IQ180</span></div>
+                <div class="member-item"><span>VXN_skpn7DK</span></div> 
+                <div class="member-item"><span>00_10B</span></div> 
+                <div class="member-item"><span>VXN_PhilipBall18469</span></div>
             </div>
         </div>
 
         <!-- VXA 步槍菁英 -->
         <div class="social-card p-6 rounded-2xl">
-            <h3 class="text-lg font-bold mb-4 card-title-normal">步槍菁英｜VXA</h3>
+            <h3 class="text-lg font-bold mb-4 card-title-normal">步槍菁英｜VXA <span class="text-xs text-gray-500 font-normal ml-2">10 人</span></h3>
             <div class="text-sm">
-                <div class="member-item">@Sgo1y <span class="role-tag">團長</span></div>
-                <div class="member-item">@Konjac <span class="role-tag">副團</span></div>
-                <div class="member-item">@Vx4cE_Jimmy</div> <div class="member-item">@CS</div>
-                <div class="member-item">@吳威家</div> <div class="member-item">@ian</div>
-                <div class="member-item">@友好:3</div> <div class="member-item">@約跑大王</div>
-                <div class="member-item">@₮Ø₥₥Ɏ(っ◔◡◔) <span class="role-tag">考官</span></div>
-                <div class="member-item">@jimmy哥</div>
+                <div class="member-item"><span>@Sgo1y</span> <span class="role-tag">團長</span></div>
+                <div class="member-item"><span>@Konjac</span> <span class="role-tag">副團</span></div>
+                <div class="member-item"><span>@Vx4cE_Jimmy</span></div> 
+                <div class="member-item"><span>@CS</span></div>
+                <div class="member-item"><span>@吳威家</span></div> 
+                <div class="member-item"><span>@ian</span></div>
+                <div class="member-item"><span>@友好:3</span></div> 
+                <div class="member-item"><span>@𝓸𝓻𝓮𝓸𝓹𝓲𝓰𝓾𝓼𝓪𝓷</span></div>
+                <div class="member-item"><span>@₮Ø₥₥Ɏ(っ◔◡◔)</span> <span class="role-tag">考官</span></div>
+                <div class="member-item"><span>@jimmy哥</span></div>
             </div>
         </div>
 
         <!-- VXS 狙擊菁英 -->
         <div class="social-card p-6 rounded-2xl">
-            <h3 class="text-lg font-bold mb-4 card-title-normal">狙擊菁英｜VXS</h3>
+            <h3 class="text-lg font-bold mb-4 card-title-normal">狙擊菁英｜VXS <span class="text-xs text-gray-500 font-normal ml-2">5 人</span></h3>
             <div class="text-sm">
-                <div class="member-item">@Vx4cE_Jimmy <span class="role-tag">團長</span></div>
-                <div class="member-item">@Konjac <span class="role-tag">副團/考官</span></div>
-                <div class="member-item">@CS</div> <div class="member-item">@ian</div>
-                <div class="member-item">@STN_XTN</div>
+                <div class="member-item"><span>@Vx4cE_Jimmy</span> <span class="role-tag">團長</span></div>
+                <div class="member-item"><span>@Konjac</span> <span class="role-tag">副團/考官</span></div>
+                <div class="member-item"><span>@CS</span></div> 
+                <div class="member-item"><span>@ian</span></div>
+                <div class="member-item"><span>@STN_XTN</span></div>
             </div>
         </div>
 
         <!-- VX 普通團 -->
         <div class="social-card p-6 rounded-2xl">
-            <h3 class="text-lg font-bold mb-4 card-title-normal">普通團｜VX</h3>
+            <h3 class="text-lg font-bold mb-4 card-title-normal">普通團｜VX <span class="text-xs text-gray-500 font-normal ml-2">5 人</span></h3>
             <div class="text-sm">
-                <div class="member-item">@ジ魅殇メ</div> <div class="member-item">VX_wow</div>
-                <div class="member-item">@123456789</div> <div class="member-item">@masonwu0709</div>
-                <div class="member-item">@.</div>
+                <div class="member-item"><span>@ジ魅殇メ</span></div> 
+                <div class="member-item"><span>VX_wow</span></div>
+                <div class="member-item"><span>@123456789</span></div> 
+                <div class="member-item"><span>@masonwu0709</span></div>
+                <div class="member-item"><span>@.</span></div>
             </div>
         </div>
 
         <!-- 王牌名單 -->
         <div class="social-card p-6 rounded-2xl">
-            <h3 class="text-lg font-bold mb-4 card-title-theme">VX 王牌｜Vx4cE</h3>
+            <h3 class="text-lg font-bold mb-4 card-title-theme">VX 王牌｜Vx4cE <span class="text-xs text-gray-500 font-normal ml-2">4 人</span></h3>
             <div class="text-sm">
-                <div class="member-item">@Vx4cE_Jimmy</div>
-                <div class="member-item">@Konjac <span class="role-tag">團長/考官</span></div>
-                <div class="member-item">@KnR_Lin</div>
-                <div class="member-item">@最菜荒野玩家</div>
+                <div class="member-item"><span>@Vx4cE_Jimmy</span></div>
+                <div class="member-item"><span>@Konjac</span> <span class="role-tag">團長/考官</span></div>
+                <div class="member-item"><span>@KnR_Lin</span></div>
+                <div class="member-item"><span>@蘑菇</span></div>
             </div>
         </div>
 
         <!-- 管理員名單 -->
         <div class="social-card p-6 rounded-2xl">
-            <h3 class="text-lg font-bold mb-4 card-title-theme">管理員名單</h3>
+            <h3 class="text-lg font-bold mb-4 card-title-theme">管理員名單 <span class="text-xs text-gray-500 font-normal ml-2">4 人</span></h3>
             <div class="text-sm">
-                <div class="member-item">@Vx4cE_Jimmy</div>
-                <div class="member-item">@Konjac</div>
-                <div class="member-item">@Sgo1y</div>
-                <div class="member-item">@LVSS</div>
+                <div class="member-item"><span>@Vx4cE_Jimmy</span></div>
+                <div class="member-item"><span>@Konjac</span></div>
+                <div class="member-item"><span>@Sgo1y</span></div>
+                <div class="member-item"><span>@LVSS</span></div>
             </div>
         </div>
 
@@ -497,13 +541,59 @@
             }
 
             // ==========================================
-            // 4. 成員快速搜尋邏輯
+            // 4. 成員快速搜尋邏輯 (進階優化：連動字卡隱藏 + 防抖效能)
             // ==========================================
-            document.getElementById('memberSearch').addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                document.querySelectorAll('.member-item').forEach(item => {
-                    item.style.display = item.textContent.toLowerCase().includes(query) ? 'block' : 'none';
-                });
+            const searchInput = document.getElementById('memberSearch');
+            const noResults = document.getElementById('noResults');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                
+                // 設定 150 毫秒防抖，避免高頻率操作 DOM
+                searchTimeout = setTimeout(() => {
+                    const query = e.target.value.toLowerCase().trim();
+                    const cards = document.querySelectorAll('.social-card');
+                    let totalVisibleCards = 0;
+
+                    cards.forEach(card => {
+                        const memberItems = card.querySelectorAll('.member-item');
+                        let hasVisibleMember = false;
+
+                        memberItems.forEach(item => {
+                            // 撈取第一個 span (純名字，不含角色標籤 span)，提升匹配精準度
+                            const nameSpan = item.querySelector('span:first-child');
+                            const memberName = nameSpan ? nameSpan.textContent.toLowerCase() : item.textContent.toLowerCase();
+                            
+                            if (memberName.includes(query)) {
+                                item.style.display = 'flex';
+                                hasVisibleMember = true;
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
+
+                        // 判斷整張字卡顯示或隱藏
+                        if (query === "") {
+                            card.style.display = 'block';
+                            totalVisibleCards++;
+                        } else {
+                            if (hasVisibleMember) {
+                                card.style.display = 'block';
+                                totalVisibleCards++;
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    // 控制「找不到符合隊員」提示畫面的顯示
+                    if (totalVisibleCards === 0) {
+                        noResults.classList.remove('hidden');
+                    } else {
+                        noResults.classList.add('hidden');
+                    }
+                }, 150);
             });
         });
     </script>
