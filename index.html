@@ -251,12 +251,13 @@
             }
         }
 
+        /* 優化淺色模式標題的顏色與陰影，提高對比度與易讀性 */
         [data-theme="light"] h1 {
-            color: #92c5ff;
+            color: #0969da;
             text-shadow: 
-                0 0 5px #92c5ff,
-                0 0 10px #0969da,
-                0 0 20px #218bff;
+                0 0 5px #b0d4ff,
+                0 0 10px #218bff,
+                0 0 20px #0550ae;
         }
 
         [data-theme="light"] h1.active {
@@ -266,9 +267,9 @@
         @keyframes neonPulseLight {
             to {
                 text-shadow: 
-                    0 0 10px #92c5ff, 
-                    0 0 25px #0969da, 
-                    0 0 45px #218bff, 
+                    0 0 10px #b0d4ff, 
+                    0 0 25px #218bff, 
+                    0 0 45px #0969da, 
                     0 0 60px #0550ae;
             }
         }
@@ -298,9 +299,14 @@
             text-shadow: 0 0 15px rgba(255, 234, 0, 0.2);
         }
 
+        [data-theme="light"] .second-section h2 {
+            color: #0969da;
+            text-shadow: 0 0 10px rgba(9, 105, 218, 0.2);
+        }
+
         [data-theme="light"] .third-section h2 {
-            color: #92c5ff;
-            text-shadow: 0 0 15px rgba(9, 105, 218, 0.6), 0 0 5px rgba(255, 255, 255, 0.3);
+            color: #0969da;
+            text-shadow: 0 0 15px rgba(9, 105, 218, 0.4), 0 0 5px rgba(255, 255, 255, 0.3);
         }
 
         .feature-list {
@@ -312,6 +318,7 @@
 
         .feature-item {
             background: var(--bg-feature);
+            color: var(--text-main); /* 確保文字顏色隨主題切換 */
             padding: 25px 30px;
             border-radius: 12px;
             border-left: 5px solid var(--theme-yellow);
@@ -461,27 +468,29 @@
             border-top: 1px solid var(--card-border);
         }
 
-        /* --- 響應式微調 (平板 & 手機端優化) --- */
+        /* --- 響應式微調 (平板 & 手機端排版優化) --- */
         @media (max-width: 768px) {
             .top-nav {
-                padding: 0 15px;
+                padding: 10px 20px;
                 height: auto;
-                min-height: 60px;
-                flex-direction: column;
-                justify-content: center;
-                gap: 10px;
-                padding-top: 10px;
-                padding-bottom: 10px;
+                min-height: 65px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                gap: 5px;
             }
             .hero-section {
                 padding-top: 120px;
             }
             .nav-menu {
-                gap: 15px;
+                order: 3;
                 width: 100%;
                 justify-content: center;
+                gap: 10px;
                 overflow-x: auto;
                 padding-bottom: 5px;
+                margin-top: 8px;
                 white-space: nowrap;
                 -webkit-overflow-scrolling: touch;
             }
@@ -507,13 +516,13 @@
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
-        <!-- 戰隊 LOGO (加上 id 方便 JavaScript 進行深淺色替換) -->
+        <!-- 戰隊 LOGO -->
         <a href="#home" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
-            <img id="navLogoImg" src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
+            <img id="navLogoImg" src="logo.png" alt="VX CLAN">
         </a>
         
         <ul class="nav-menu">
-            <li><a href="#home" class="nav-link active">首頁</a></li>
+            <li><a href="#home" class="nav-link">首頁</a></li>
             <li><a href="成員名單.html" class="nav-link">成員名單</a></li>
             <li><a href="團戰.html" class="nav-link">團戰賽程</a></li>
             <li><a href="合作.html" class="nav-link">合作夥伴</a></li>
@@ -599,7 +608,6 @@
             const themeText = document.getElementById('themeText');
             const navLogoImg = document.getElementById('navLogoImg');
             
-            // 預載淺色模式專用圖片，消除下載延遲產生的閃爍白畫面
             const preloadLogo = new Image(); preloadLogo.src = '顛倒logo.png';
             const preloadBg = new Image(); preloadBg.src = '顛倒背景.png';
 
@@ -620,11 +628,11 @@
                 if (theme === 'dark') {
                     themeIcon.textContent = '🌙';
                     themeText.textContent = '深色模式';
-                    if (navLogoImg) navLogoImg.src = 'logo.png'; // 👈 深色模式下用原本 logo
+                    if (navLogoImg) navLogoImg.src = 'logo.png';
                 } else {
                     themeIcon.textContent = '☀️';
                     themeText.textContent = '淺色模式';
-                    if (navLogoImg) navLogoImg.src = '顛倒logo.png'; // 👈 淺色模式下自動切換成顛倒 logo
+                    if (navLogoImg) navLogoImg.src = '顛倒logo.png';
                 }
             }
 
@@ -663,33 +671,48 @@
             });
 
             // ==========================================
-            // 3.5 導覽列 Scrollspy (滾動自動高亮對應選單 - 已過濾非錨點項目)
+            // 3.5 導覽列作用中狀態 (同時支援單頁滾動與多頁導覽)
             // ==========================================
-            const sections = document.querySelectorAll('section');
             const navLinks = document.querySelectorAll('.nav-link');
+            const currentPath = window.location.pathname;
 
-            window.addEventListener('scroll', () => {
-                let currentSectionId = '';
-                const scrollPosition = window.scrollY + 100; 
+            function updateNavActiveState() {
+                // 1. 偵測目前是不是在首頁 ( index.html 或是 '/' )
+                const isHomePage = currentPath === '/' || 
+                                   currentPath.endsWith('index.html') || 
+                                   currentPath === '' || 
+                                   (!currentPath.includes('成員') && !currentPath.includes('團戰') && !currentPath.includes('合作'));
 
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    const sectionHeight = section.offsetHeight;
-                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                        currentSectionId = section.getAttribute('id');
+                // 先移除所有項目的 active 狀態
+                navLinks.forEach(link => link.classList.remove('active'));
+
+                if (isHomePage) {
+                    // 如果在首頁，因為此頁面有所有 section 內容，我們直接讓「首頁」標籤維持 active
+                    const homeLink = Array.from(navLinks).find(link => {
+                        const href = link.getAttribute('href');
+                        return href === '#home' || href === 'index.html' || href === '/';
+                    });
+                    if (homeLink) {
+                        homeLink.classList.add('active');
                     }
-                });
-
-                navLinks.forEach(link => {
-                    const href = link.getAttribute('href');
-                    if (href.startsWith('#')) {
-                        link.classList.remove('active');
-                        if (href === `#${currentSectionId}`) {
-                            link.classList.add('active');
+                } else {
+                    // 如果在其他分頁（例如成員名單.html、團戰.html、合作.html），比對網址亮起對應項目
+                    navLinks.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && !href.startsWith('#')) {
+                            const linkPage = href.split('/').pop();
+                            const currentPage = currentPath.split('/').pop();
+                            if (currentPage && decodeURIComponent(currentPage) === decodeURIComponent(linkPage)) {
+                                link.classList.add('active');
+                            }
                         }
-                    }
-                });
-            });
+                    });
+                }
+            }
+
+            // 綁定滾動偵測與初始化
+            window.addEventListener('scroll', updateNavActiveState);
+            updateNavActiveState();
 
             // ==========================================
             // 4. 微光游標隨動與互動縮放
@@ -697,7 +720,7 @@
             const cursorGlow = document.getElementById('cursor-glow');
             const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
             
-            if (!isTouchDevice) {
+            if (!isTouchDevice && cursorGlow) {
                 cursorGlow.style.display = 'block';
                 
                 document.addEventListener('mousemove', (e) => {
