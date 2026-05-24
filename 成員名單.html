@@ -23,7 +23,7 @@
             --card-border: rgba(255, 255, 255, 0.08);
             --card-border-hover: #ffea00;
             
-            /* 💡 深色模式游標：經典發光霓虹 */
+            /* 深色模式游標：經典發光霓虹 */
             --cursor-glow-color: rgba(255, 234, 0, 0.4);
             --cursor-glow-hover: rgba(0, 173, 181, 0.5);
             --cursor-blend: screen; /* 讓霓虹光透出來 */
@@ -47,7 +47,7 @@
             --card-border: #d0d7de;
             --card-border-hover: #0969da;
             
-            /* 💡 淺色模式游標：質感 GitHub 藍色微光（使用 normal 避免被白底吃掉） */
+            /* 淺色模式游標：質感 GitHub 藍色微光 */
             --cursor-glow-color: rgba(9, 105, 218, 0.25);
             --cursor-glow-hover: rgba(9, 105, 218, 0.45);
             --cursor-blend: normal;
@@ -63,7 +63,7 @@
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; 
+            font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif; 
             transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
         }
         
@@ -73,12 +73,12 @@
             color: var(--text-main); 
             min-height: 100vh; 
             overflow-x: hidden; 
-            padding-top: 70px; /* 預留給固定在頂部的導覽列 */
+            /* 移除固定 padding-top，由 sticky 導覽列自然推開內容 */
         }
 
         /* --- 頂部導覽列 (Navigation Bar) --- */
         .top-nav {
-            position: fixed;
+            position: sticky; /* 改為 sticky 磁吸定位，自動撐開高度不重疊 */
             top: 0;
             left: 0;
             width: 100%;
@@ -174,7 +174,7 @@
             z-index: 9999; 
             transform: translate(-50%, -50%); 
             transition: width 0.3s, height 0.3s, background 0.3s;
-            mix-blend-mode: var(--cursor-blend); /* 💡 修改這行：自動讀取深色/淺色混合模式 */
+            mix-blend-mode: var(--cursor-blend); 
             display: none;
         }
 
@@ -188,7 +188,6 @@
         .social-card {
             background: var(--bg-card);
             border: 1px solid var(--card-border);
-            /* 調整過渡：讓滑鼠離開時有流暢緩衝，在 JS 內會再動態接管 */
             transition: transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
             transform-style: preserve-3d;
         }
@@ -236,29 +235,25 @@
         /* --- 響應式微調 (平板 & 手機端優化) --- */
         @media (max-width: 768px) {
             .top-nav {
-                padding: 0 15px;
+                padding: 15px;
                 height: auto;
                 min-height: 60px;
                 flex-direction: column;
                 justify-content: center;
-                gap: 10px;
-                padding-top: 10px;
-                padding-bottom: 10px;
+                gap: 12px;
             }
-            body {
-                padding-top: 120px; /* 修正：提高預留高度以適應手機雙排導覽列 */
-            }
+            /* 移除手機版 body 寫死的 padding-top，由 sticky 完美適配 */
             .nav-menu {
                 gap: 15px;
                 width: 100%;
-                justify-content: flex-start; /* 手機端靠左滑動更流暢 */
+                justify-content: flex-start; 
                 overflow-x: auto;
                 padding-bottom: 5px;
-                white-space: nowrap; /* 防止按鈕折行 */
+                white-space: nowrap; 
                 -webkit-overflow-scrolling: touch;
             }
             .nav-menu::-webkit-scrollbar {
-                display: none; /* 隱藏手機選單滾動條 */
+                display: none; 
             }
             .nav-link {
                 padding: 6px 12px;
@@ -271,7 +266,7 @@
         }
     </style>
 </head>
-<body class="p-8">
+<body>
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
@@ -297,14 +292,15 @@
     <!-- 粒子微光滑鼠隨動特效容器 -->
     <div class="cursor-glow"></div>
 
-    <header class="max-w-4xl mx-auto text-center py-16">
+    <!-- 內容區域（移除 body p-8 改由容器自帶 px-4 px-8 進行外距防爆） -->
+    <header class="max-w-4xl mx-auto text-center py-16 px-4 md:px-8">
         <h1 class="text-5xl font-bold mb-4 tracking-tighter">VX CLAN <span class="card-title-theme">ROSTER</span></h1>
         <p class="text-gray-500 mb-8">總人數：34 人</p>
         <input type="text" id="memberSearch" placeholder="搜尋隊員名稱..." 
                class="bg-transparent border-b outline-none w-64 text-center py-2 text-lg transition-colors">
     </header>
 
-    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16">
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16 px-4 md:px-8">
         
         <!-- 管理層 -->
         <div class="social-card p-6 rounded-2xl">
@@ -316,7 +312,7 @@
         <!-- VXN 小刀菁英 -->
         <div class="social-card p-6 rounded-2xl">
             <h3 class="text-lg font-bold mb-4 card-title-normal">小刀菁英｜VXN</h3>
-            <div class="text-sm h-64 overflow-y-auto">
+            <div class="text-sm h-64 overflow-y-auto pr-1">
                 <div class="member-item">@KnR_Lin <span class="role-tag">團長</span></div>
                 <div class="member-item">@最菜荒野玩家 <span class="role-tag">副團/考官</span></div>
                 <div class="member-item">@TSB郭志麒 <span class="role-tag">考官</span></div>
