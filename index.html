@@ -98,13 +98,17 @@
         }
 
         .nav-logo {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: var(--theme-yellow);
+            display: flex;
+            align-items: center;
+            height: 100%;
             text-decoration: none;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px var(--theme-yellow);
+            padding: 5px 0;
+        }
+
+        .nav-logo img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
         }
 
         .nav-menu {
@@ -493,7 +497,10 @@
 
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
-        <a href="index.html" class="nav-logo">VX CLAN</a>
+        <!-- 戰隊 LOGO -->
+        <a href="index.html" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
+            <img src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
+        </a>
         
         <ul class="nav-menu">
             <li><a href="index.html" class="nav-link active">首頁</a></li>
@@ -513,12 +520,12 @@
     <div id="cursor-glow" class="cursor-glow"></div>
 
     <!-- 第一幕 -->
-    <section class="hero-section">
+    <section id="home" class="hero-section">
         <h1 id="hero-title">VX戰隊</h1>
     </section>
 
     <!-- 第二幕 -->
-    <section class="second-section">
+    <section id="features" class="second-section">
         <div class="container">
             <h2 class="reveal fade-up">VX戰隊特色</h2>
             
@@ -529,13 +536,13 @@
             </div>
 
             <div class="alliance-card reveal scale-up" style="transition-delay: 0.2s;">
-                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓲𝓽𝓮𝓭 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
+                <div class="alliance-name">已加入 𝓡𝓲𝓿𝓪𝓵𝓼 𝓤𝓲𝓽𝓮δ 𝓣𝓮𝓪𝓶 𝓒𝓸𝓾𝓬𝓲𝓵 [𝓡.𝓤.𝓣.𝓒]</div>
             </div>
         </div>
     </section>
 
     <!-- 第三幕 -->
-    <section class="third-section">
+    <section id="community" class="third-section">
         <div class="container">
             <h2 class="reveal fade-up">VX戰隊社群</h2>
             
@@ -616,7 +623,7 @@
             }
 
             // ==========================================
-            // 3. 滾動偵測
+            // 3. 滾動偵測 (內容元素的 Reveal 動畫)
             // ==========================================
             const revealElements = document.querySelectorAll('.reveal');
             
@@ -637,6 +644,33 @@
  
             revealElements.forEach(element => {
                 revealObserver.observe(element);
+            });
+
+            // ==========================================
+            // 3.5 導覽列 Scrollspy (滾動自動高亮對應選單)
+            // ==========================================
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                let currentSectionId = '';
+                // 考量到頂部導覽列高 70px，抓取當前滾動位置
+                const scrollPosition = window.scrollY + 100; 
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        currentSectionId = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
             });
 
             // ==========================================

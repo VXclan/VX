@@ -79,13 +79,17 @@
         }
 
         .nav-logo {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: var(--theme-yellow);
+            display: flex;
+            align-items: center;
+            height: 100%;
             text-decoration: none;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px var(--theme-yellow);
+            padding: 5px 0;
+        }
+
+        .nav-logo img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
         }
 
         .nav-menu {
@@ -225,7 +229,9 @@
     <!-- 頂部導覽列 -->
     <nav class="top-nav">
         <!-- 戰隊 LOGO -->
-        <a href="index.html" class="nav-logo">VX CLAN</a>
+        <a href="index.html" class="nav-logo" style="display: flex; align-items: center; padding: 0;">
+            <img src="logo.png" alt="VX CLAN" style="height: 45px; width: auto; object-fit: contain;">
+        </a>
         
         <!-- 選單項目 -->
         <ul class="nav-menu">
